@@ -1,0 +1,114 @@
+[
+    {
+        "asset": "PFEP/IVO Core Platform",
+        "web_search_evidence": [
+            {
+                "competitor_source": "Top 10 FoundationIP Alternatives & Competitors in 2026",
+                "link": "https://www.g2.com/products/foundationip/competitors/alternatives",
+                "description": "The best overall FoundationIP alternative is AppColl. Other similar apps like FoundationIP are Inteum, Alt Legal, AQX, and Patricia IP Management. FoundationIP ..."
+            },
+            {
+                "competitor_source": "Top 18 PFEP Alternatives & Competitors - 2026",
+                "link": "https://www.krowdbase.com/alternatives/pfep",
+                "description": "Some of the notable alternatives to PFEP include Trello, ClickUp, Asana, Wrike, monday.com, MeisterTask, Zoho Projects, Airtable, Teamhood, Kanboard, Taiga, ..."
+            },
+            {
+                "competitor_source": "Top 8 IP Management Software Comparison | Law Firms & ...",
+                "link": "https://blackhills.ai/resources/ip-management-software-systems/",
+                "description": "This IP management software comparison was expertly crafted by IP Law attorneys to help law firms & corporations make the best choice for their needs."
+            },
+            {
+                "competitor_source": "Top 7 IP Portfolio Management Tools for Law Firms (2026)",
+                "link": "https://www.patsnap.com/resources/blog/articles/7-best-ip-portfolio-tools-for-law-firms-2026/",
+                "description": "IP attorneys need purpose-built patent portfolio management software, not generic project management tools. This guide compares the top seven IP management ..."
+            },
+            {
+                "competitor_source": "Top Intellectual Property Management Software Today",
+                "link": "https://www.fortra.com/blog/top-intellectual-property-management-software-today",
+                "description": "IP management software tracks valued intellectual resources like patents, copyrights, trademarks, trade secrets, royalties, licenses, and ..."
+            },
+            {
+                "competitor_source": "Best IPMS: Enterprise IP Management Software Guide",
+                "link": "https://www.maxval.com/ip-management-software-ipms-guide/",
+                "description": "The best IPMS platforms enable enterprises to centralize IP portfolio management, streamline patent lifecycle workflows, automate docketing, and leverage patent ..."
+            },
+            {
+                "competitor_source": "Best Intellectual Property Management Software With R&D ...",
+                "link": "https://www.gartner.com/reviews/market/intellectual-property-management-software-with-r-and-d-specific-use-cases",
+                "description": "The software enables users to manage patent portfolios, monitor competitors activities, and assess innovation landscapes. Orbit Intelligence addresses business ..."
+            },
+            {
+                "competitor_source": "Best IP Management Software",
+                "link": "https://www.computerpackages.com/best-ip-management-software/",
+                "description": "Discover the best IP management software solutions, including key features and evaluation criteria. Learn how to enhance your IP strategy ..."
+            },
+            {
+                "competitor_source": "Market Share of FoundationIP - Property Management",
+                "link": "https://www.6sense.com/tech/property-management/foundationip-market-share",
+                "description": "The top three of FoundationIP's competitors in the Property Management category are AppFolio with 11.45%, Entrata with 8.50%, Yardi Genesis with 6.42% market ..."
+            },
+            {
+                "competitor_source": "Top 9 leading patent analytics software for law",
+                "link": "https://softwarefinder.com/resources/leading-patent-analytics-software-law",
+                "description": "2. LexisNexis PatentSight. LexisNexis PatentSight is a leading patent analysis tool designed specifically to help law firms with data-driven IP ..."
+            }
+        ],
+        "ai_analysis_prompt": "\n### ROLE: STRATEGIC MARKET INTELLIGENCE ANALYST\n\n### INTERNAL ASSET UNDER REVIEW:\n- Asset Name: PFEP/IVO Core Platform\n- Internal Use Case: Provide a centralized PFEP foundation for scalable part\u2011level planning and execution.\n- Sector Focus: 2 - IP\n\n### EXTERNAL MARKET DATA (RETRIEVED VIA GOOGLE SEARCH):\n- Top 10 FoundationIP Alternatives & Competitors in 2026: The best overall FoundationIP alternative is AppColl. Other similar apps like FoundationIP are Inteum, Alt Legal, AQX, and Patricia IP Management. FoundationIP ...\n- Top 18 PFEP Alternatives & Competitors - 2026: Some of the notable alternatives to PFEP include Trello, ClickUp, Asana, Wrike, monday.com, MeisterTask, Zoho Projects, Airtable, Teamhood, Kanboard, Taiga, ...\n- Top 8 IP Management Software Comparison | Law Firms & ...: This IP management software comparison was expertly crafted by IP Law attorneys to help law firms & corporations make the best choice for their needs.\n- Top 7 IP Portfolio Management Tools for Law Firms (2026): IP attorneys need purpose-built patent portfolio management software, not generic project management tools. This guide compares the top seven IP management ...\n- Top Intellectual Property Management Software Today: IP management software tracks valued intellectual resources like patents, copyrights, trademarks, trade secrets, royalties, licenses, and ...\n- Best IPMS: Enterprise IP Management Software Guide: The best IPMS platforms enable enterprises to centralize IP portfolio management, streamline patent lifecycle workflows, automate docketing, and leverage patent ...\n- Best Intellectual Property Management Software With R&D ...: The software enables users to manage patent portfolios, monitor competitors activities, and assess innovation landscapes. Orbit Intelligence addresses business ...\n- Best IP Management Software: Discover the best IP management software solutions, including key features and evaluation criteria. Learn how to enhance your IP strategy ...\n- Market Share of FoundationIP - Property Management: The top three of FoundationIP's competitors in the Property Management category are AppFolio with 11.45%, Entrata with 8.50%, Yardi Genesis with 6.42% market ...\n- Top 9 leading patent analytics software for law: 2. LexisNexis PatentSight. LexisNexis PatentSight is a leading patent analysis tool designed specifically to help law firms with data-driven IP ...\n\n### ASSIGNMENT:\nPerform a 1.3 Deep-Dive Competitiveness Analysis. You must:\n1. Identify the top 3 direct COTS (Commercial Off-The-Shelf) competitors.\n2. Conduct a 'Functional Gap Analysis': Compare our asset's features vs these market leaders.\n3. Determine 'Market Standing': Are we a Challenger, Niche Player, or Leader?\n4. Generate an 'Improvement Roadmap': List 3 technical suggestions to beat the competition.\n\n### JSON OUTPUT FORMAT:\n{\n    \"asset_name\": \"PFEP/IVO Core Platform\",\n    \"found_competitors\": [\"Comp 1\", \"Comp 2\", \"Comp 3\"],\n    \"gap_analysis\": {\n        \"our_pros\": [],\n        \"our_cons\": [],\n        \"functional_missing_features\": []\n    },\n    \"strategic_recommendation\": \"\",\n    \"improvement_roadmap\": [\"Action 1\", \"Action 2\", \"Action 3\"]\n}\n"
+    },
+    {
+        "asset": "Customer Service Chatbot",
+        "web_search_evidence": [
+            {
+                "competitor_source": "7 Best AI Chatbots for IT Helpdesk and Internal Support ...",
+                "link": "https://wonderchat.io/blog/best-ai-chatbots-it-helpdesk",
+                "description": "Compare 7 AI chatbots for internal IT support: Wonderchat, Zendesk, Freshservice, ServiceNow, Microsoft Copilot, Workativ & Aisera \u2014 ranked ..."
+            },
+            {
+                "competitor_source": "7 Best AI Knowledge Base Software for Support Teams in ...",
+                "link": "https://stonly.com/blog/best-ai-knowledge-base-software/",
+                "description": "Document360 is a knowledge management system that helps small teams set up professional help centers. Its AI-powered chatbot sources ..."
+            },
+            {
+                "competitor_source": "Best Conversational AI Platforms Reviews 2026",
+                "link": "https://www.gartner.com/reviews/market/conversational-ai-platforms",
+                "description": "Boost.ai is a conversational AI software designed to automate customer service and internal support for organizations by deploying chatbots and virtual agents ..."
+            },
+            {
+                "competitor_source": "42 Best AI Chatbots for Customer Service in 2026",
+                "link": "https://thecxlead.com/tools/best-ai-chatbot-for-customer-service/",
+                "description": "Evly is an AI chatbot platform designed for customer service teams who want to automate support, personalize conversations, and maintain brand ..."
+            },
+            {
+                "competitor_source": "Top 8 AI Knowledge Base Tools for Customer Support ...",
+                "link": "https://www.usefini.com/guides/top-ai-knowledge-base-tools",
+                "description": "Compare 2026's leading AI knowledge base solutions to streamline support workflows and boost efficiency. Deepak Singla ..."
+            },
+            {
+                "competitor_source": "Applications of Chatbots in Improving Patient Care Outcomes",
+                "link": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12969406/",
+                "description": "This review explored the application of chatbots in healthcare, focusing on patient monitoring, personalised care and medical services."
+            },
+            {
+                "competitor_source": "10 Best AI Chatbots for Customer Service (2026 Expert Picks)",
+                "link": "https://herothemes.com/blog/ai-chatbots-for-customer-service/",
+                "description": "Expert picks for the best AI chatbots for customer service in 2026. Review features and UX. Reduce workload, improve experience, connect to ..."
+            },
+            {
+                "competitor_source": "7 Best Chatbots for Customer Service in 2025",
+                "link": "https://thelevel.ai/blog/best-chatbots-for-customer-service/",
+                "description": "7 Best Chatbots for Customer Service in 2025 \u00b7 Level AI Virtual Agent \u00b7 Intercom Fin \u00b7 Tidio \u00b7 Zendesk AI Agents \u00b7 Ada \u00b7 HubSpot \u00b7 Gorgias ..."
+            },
+            {
+                "competitor_source": "The 6 Best AI Tools for Customer Support Teams - Groove HQ",
+                "link": "https://www.groovehq.com/blog/6-best-ai-tools-for-customer-support-teams",
+                "description": "3. Helply: The #1 AI Agent Agent for Customer Support. Helply is a dedicated, intelligent AI agent that you add to your existing helpdesk."
+            },
+            {
+                "competitor_source": "Top 10 AI-Powered Chatbots for Customer Service",
+                "link": "https://www.folio3.ai/blog/top-10-ai-powered-chatbots-for-customer-service",
+                "description": "Conversica, LiveHelpNow, and Zoho Desk offer custom plans for large organizations with dedicated support, advanced AI models, and unlimited features. Pricing ..."
+            }
+        ],
+        "ai_analysis_prompt": "\n### ROLE: STRATEGIC MARKET INTELLIGENCE ANALYST\n\n### INTERNAL ASSET UNDER REVIEW:\n- Asset Name: Customer Service Chatbot\n- Internal Use Case: This AI chatbot will utilize internal knowledge documents and work instructions to aid CSRs during the triage process, thereby enhancing decision-making and efficiency.\n- Sector Focus: 2 - IP\n\n### EXTERNAL MARKET DATA (RETRIEVED VIA GOOGLE SEARCH):\n- 7 Best AI Chatbots for IT Helpdesk and Internal Support ...: Compare 7 AI chatbots for internal IT support: Wonderchat, Zendesk, Freshservice, ServiceNow, Microsoft Copilot, Workativ & Aisera \u2014 ranked ...\n- 7 Best AI Knowledge Base Software for Support Teams in ...: Document360 is a knowledge management system that helps small teams set up professional help centers. Its AI-powered chatbot sources ...\n- Best Conversational AI Platforms Reviews 2026: Boost.ai is a conversational AI software designed to automate customer service and internal support for organizations by deploying chatbots and virtual agents ...\n- 42 Best AI Chatbots for Customer Service in 2026: Evly is an AI chatbot platform designed for customer service teams who want to automate support, personalize conversations, and maintain brand ...\n- Top 8 AI Knowledge Base Tools for Customer Support ...: Compare 2026's leading AI knowledge base solutions to streamline support workflows and boost efficiency. Deepak Singla ...\n- Applications of Chatbots in Improving Patient Care Outcomes: This review explored the application of chatbots in healthcare, focusing on patient monitoring, personalised care and medical services.\n- 10 Best AI Chatbots for Customer Service (2026 Expert Picks): Expert picks for the best AI chatbots for customer service in 2026. Review features and UX. Reduce workload, improve experience, connect to ...\n- 7 Best Chatbots for Customer Service in 2025: 7 Best Chatbots for Customer Service in 2025 \u00b7 Level AI Virtual Agent \u00b7 Intercom Fin \u00b7 Tidio \u00b7 Zendesk AI Agents \u00b7 Ada \u00b7 HubSpot \u00b7 Gorgias ...\n- The 6 Best AI Tools for Customer Support Teams - Groove HQ: 3. Helply: The #1 AI Agent Agent for Customer Support. Helply is a dedicated, intelligent AI agent that you add to your existing helpdesk.\n- Top 10 AI-Powered Chatbots for Customer Service: Conversica, LiveHelpNow, and Zoho Desk offer custom plans for large organizations with dedicated support, advanced AI models, and unlimited features. Pricing ...\n\n### ASSIGNMENT:\nPerform a 1.3 Deep-Dive Competitiveness Analysis. You must:\n1. Identify the top 3 direct COTS (Commercial Off-The-Shelf) competitors.\n2. Conduct a 'Functional Gap Analysis': Compare our asset's features vs these market leaders.\n3. Determine 'Market Standing': Are we a Challenger, Niche Player, or Leader?\n4. Generate an 'Improvement Roadmap': List 3 technical suggestions to beat the competition.\n\n### JSON OUTPUT FORMAT:\n{\n    \"asset_name\": \"Customer Service Chatbot\",\n    \"found_competitors\": [\"Comp 1\", \"Comp 2\", \"Comp 3\"],\n    \"gap_analysis\": {\n        \"our_pros\": [],\n        \"our_cons\": [],\n        \"functional_missing_features\": []\n    },\n    \"strategic_recommendation\": \"\",\n    \"improvement_roadmap\": [\"Action 1\", \"Action 2\", \"Action 3\"]\n}\n"
+    }
+]

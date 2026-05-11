@@ -1,0 +1,41 @@
+{
+  "report_id": "GAP_ANALYSIS_2026-05",
+  "asset_name": "PFEP/IVO Core Platform",
+  "market_standing": "Challenger",
+  "benchmarking": {
+    "top_3_competitors": [
+      "o9 Solutions",
+      "Blue Yonder",
+      "Kinaxis"
+    ],
+    "pros": [
+      "Strong PFEP-centered design for standardizing part-level planning and replenishment logic across sites.",
+      "Likely simpler deployment path for teams needing focused PFEP capability instead of broad enterprise-suite transformation.",
+      "Can accelerate planning governance by unifying PFEP data and decision rules in one operational foundation."
+    ],
+    "cons": [
+      "Lower visible market validation than global leaders that publicly cite large-scale transformations and analyst leadership recognition.",
+      "Narrower out-of-the-box scope versus end-to-end planning suites spanning IBP, demand/supply, inventory, production, and orchestration.",
+      "Limited public ROI proof points compared with competitors highlighting quantified enterprise outcomes."
+    ],
+    "functional_gaps": [
+      "Real-time cross-functional orchestration across planning, procurement, manufacturing, and logistics.",
+      "Integrated multi-echelon optimization with advanced scenario modeling and enterprise-wide what-if simulation at scale.",
+      "Productized value-tracking cockpit with externally benchmarked KPI outcomes (service levels, inventory turns, working capital)."
+    ]
+  },
+  "improvement_suggestions": [
+    "Add an AI orchestration layer for exception handling, autonomous replenishment recommendations, and planner-in-the-loop approvals.",
+    "Implement an industrial integration pack (ERP/MES/WMS/APS connectors) with canonical part master and policy synchronization templates.",
+    "Launch a measurable value framework with baseline-to-benefit tracking (inventory reduction, service uplift, planning cycle-time) and customer reference playbooks."
+  ],
+  "reference_links": [
+    "https://o9solutions.com/",
+    "https://o9solutions.com/industries/industrial-manufacturing",
+    "https://blueyonder.com/solutions/supply-chain-planning",
+    "https://now.blueyonder.com/gartner-magic-quadrant-scp-discrete.html",
+    "https://www.kinaxis.com/en",
+    "https://www.kinaxis.com/solutions/platform",
+    "https://www.relexsolutions.com/solutions/supply-chain-planning/"
+  ]
+}

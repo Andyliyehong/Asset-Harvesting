@@ -1,0 +1,127 @@
+{
+  "report_id": "6_gap_anaysis_2026-05-11",
+  "asset_name": "PFEP/IVO Core Platform",
+  "market_standing": "Challenger",
+  "benchmarking": {
+    "competitor_tiers": {
+      "consulting_peers": [
+        {
+          "firm": "BCG",
+          "asset": "Supply Chain AI by BCG X + BCG Operations Supply Chain Management",
+          "winning_story": "BCG X publishes direct operations transformation stories, including AI-enabled modernization of a large integrated iron-ore supply chain and resilience-focused supply-chain redesign in food service, indicating strong consulting-to-execution capability."
+        }
+      ],
+      "tech_giants": [
+        {
+          "company": "AWS",
+          "solution": "Amazon Connect Decisions (next generation of AWS Supply Chain)",
+          "advantage": "Native agentic planning with item-level demand intelligence and 24/7 supply intelligence; direct customer evidence cites nearly 40% forecast-accuracy improvement, 90% forecasting automation, and 7% inventory reduction with improved fill rate."
+        },
+        {
+          "company": "Google Cloud",
+          "solution": "Google Cloud Supply Chain & Logistics data/AI stack",
+          "advantage": "Direct customer stories show agentic AI applied to retail and food-service operations, including measurable productivity and conversion gains tied to data-and-AI-enabled planning and execution workflows."
+        },
+        {
+          "company": "Microsoft",
+          "solution": "Dynamics 365 + autonomous agents across ERP and supply-chain processes",
+          "advantage": "Tight ERP/process integration with broad enterprise footprint and rapid Copilot/agent rollout across business workflows, lowering adoption friction for existing Microsoft estates."
+        }
+      ],
+      "cots_vendors": [
+        {
+          "name": "SAP IBP",
+          "focus": "End-to-end cloud planning (S&OP, demand sensing, response/supply, DDMRP, inventory planning) with SAP ecosystem integration.",
+          "gap_vs_us": "Broader packaged planning scope and mature enterprise integrations may exceed PFEP/IVO breadth, but can require heavier transformation effort than a PFEP-focused deployment."
+        },
+        {
+          "name": "Oracle Supply Chain Planning",
+          "focus": "Fusion cloud planning with AI/ML forecasting, replenishment, production scheduling, and S&OP; recognized as 2026 Gartner MQ Leader for SCP Discrete Industries.",
+          "gap_vs_us": "Stronger out-of-the-box cross-functional planning depth and analyst validation; PFEP/IVO advantage is potentially faster part-level standardization in constrained manufacturing contexts."
+        },
+        {
+          "name": "LeanDNA",
+          "focus": "Discrete-manufacturing inventory optimization and supply planning with ERP augmentation and execution-oriented control-tower patterns.",
+          "gap_vs_us": "Directly competes on part-level execution and shows strong manufacturing ROI proof points, reducing PFEP/IVO differentiation unless unique IP moat is explicit."
+        }
+      ]
+    },
+    "pros": [
+      "PFEP/IVO is tightly aligned to part-level governance and standardization, which is often a practical first value wedge in industrial product environments.",
+      "Consulting-to-code potential: can embed enterprise-specific planning rules, data semantics, and operational playbooks faster than full-suite replacement.",
+      "Likely lower initial ownership burden for targeted PFEP outcomes compared with broad COTS transformation programs."
+    ],
+    "cons": [
+      "Moat risk: without proprietary optimization IP and benchmarked ROI, the asset can be perceived as a wrapper around dashboarding and workflow layers.",
+      "Scale risk versus hyperscaler-native and COTS platforms that already package agentic planning, broad integrations, and global references.",
+      "Evidence gap: fewer publicly verifiable, quantified outcomes than top-tier peers and COTS leaders."
+    ],
+    "functional_gaps": [
+      "Agentic planning copilots for autonomous exception triage, recommendation execution, and closed-loop learning at item/part granularity.",
+      "Enterprise-grade digital thread from PFEP master data to procurement, production, inventory, and logistics execution with end-to-end traceability.",
+      "Benchmark-backed value cockpit with auditable KPI baselines (inventory, shortages, OTD, working capital) and realized benefit tracking by site and value stream."
+    ]
+  },
+  "improvement_roadmap": [
+    "Productize a proprietary part-level optimization engine (policy simulation + scenario AI + execution recommendations) and expose it as reusable IP rather than project logic.",
+    "Release an industrial integration accelerator for SAP/Oracle/Microsoft ERP plus MES/WMS signals to reduce implementation time and prove lower total ownership cost.",
+    "Build an evidence program with lighthouse clients and independently auditable outcomes (for example inventory reduction, shortage reduction, and OTD uplift) to establish a defensible market narrative."
+  ],
+  "reference_evidence": [
+    {
+      "related_to": "benchmarking.competitor_tiers.consulting_peers[0].winning_story",
+      "entity": "BCG",
+      "links": [
+        "https://www.bcg.com/x/mark-your-moment/how-an-iron-ore-producer-modernized-mining-operations-with-ai",
+        "https://www.bcg.com/x/mark-your-moment/creating-opportunities-for-a-food-service-chain-powered-by-resilence-tech-and-data"
+      ]
+    },
+    {
+      "related_to": "benchmarking.competitor_tiers.tech_giants[0].advantage",
+      "entity": "AWS",
+      "links": [
+        "https://aws.amazon.com/products/connect/decisions/demand-intelligence/",
+        "https://aws.amazon.com/products/connect/decisions/supply-intelligence/"
+      ]
+    },
+    {
+      "related_to": "benchmarking.competitor_tiers.tech_giants[1].advantage",
+      "entity": "Google Cloud",
+      "links": [
+        "https://cloud.google.com/customers/fairpricegroup",
+        "https://cloud.google.com/customers/gordonfoodservice"
+      ]
+    },
+    {
+      "related_to": "benchmarking.competitor_tiers.tech_giants[2].advantage",
+      "entity": "Microsoft",
+      "links": [
+        "https://www.microsoft.com/en-us/dynamics-365/blog/business-leader/2024/10/21/transform-work-with-autonomous-agents-across-your-business-processes/"
+      ]
+    },
+    {
+      "related_to": "benchmarking.competitor_tiers.cots_vendors[0].focus",
+      "entity": "SAP IBP",
+      "links": [
+        "https://www.sap.com/documents/2024/03/9ed905e8-b17e-0010-bca6-c68f7e60039b.html",
+        "https://www.sap.com/docs/download/2024/03/9ed905e8-b17e-0010-bca6-c68f7e60039b.pdf"
+      ]
+    },
+    {
+      "related_to": "benchmarking.competitor_tiers.cots_vendors[1].focus",
+      "entity": "Oracle Supply Chain Planning",
+      "links": [
+        "https://www.oracle.com/customers/unilever-prestige/",
+        "https://www.oracle.com/customers/zebra-technologies-scm/"
+      ]
+    },
+    {
+      "related_to": "benchmarking.competitor_tiers.cots_vendors[2].focus",
+      "entity": "LeanDNA",
+      "links": [
+        "https://www.leandna.com/resources/case-study-aerospace-manufacturer-frees-up-80m-in-working-capital/",
+        "https://www.leandna.com/resources/medical-device-manufacturer-reduces-inventory-20-percent-gains-inventory-control-amid-covid-19/"
+      ]
+    }
+  ]
+}

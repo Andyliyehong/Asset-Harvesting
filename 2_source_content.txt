@@ -1,0 +1,1287 @@
+
+--- Page 1 ---
+22nd April 2026
+AI&D Project Spotlight
+Business Network Engineering Design - Comcast & 
+Customer Intelligence - Ross and Kimberly Clark
+
+--- Page 2 ---
+Page 2  
+Agenda
+• Welcome & Objectives
+• Module 1 – Business Network Engineering Design - Comcast (25 minutes)
+• Module 2 – Customer Intelligence Composable CDP – Ross Stores & Kimberly 
+Clark (25 minutes)
+
+--- Page 3 ---
+Page 3  
+Course Objectives
+1. Explain project objectives and identify key challenges faced during implementation.
+2. Discuss strategies used and describe team collaboration for project success.
+3. Analyze tools and methodologies, then compare them with alternative approaches.
+4. Apply lessons learned to anticipate and address similar challenges.
+5. Review key takeaways, focusing on actionable strategies and innovative solutions.
+
+--- Page 4 ---
+Comcast:
+Business Network Engineering 
+Design
+April 2026
+
+--- Page 5 ---
+Agenda and speakers
+• Network Design.ai  - Context and Problem Statement
+• Business process context and where our solution fits in
+• Agentic AI collaboration in our solution
+• Solution Architecture
+• Demo
+4/30/2026
+Insert footer text here
+5
+Ed Bobrin
+Roma Irungbam
+Ravi K Misra
+
+--- Page 6 ---
+LATAM Consulting Leadership visit - Agenda
+6
+6
+Accelerate / augment conceptual-network design activities to enable faster sales cycles through the use of 
+Agentic AI and LLMs
+Network Design.ai  - Context and Problem Statement
+The sales cycles in telecom companies take several weeks, for enterprise and SMB customers, 
+where customer requirements need to be understood, solution designed, order created, 
+provisioned and sent for billing. 
+Why target network design?
+30 – 40*% of sales 
+cycle time is spent on 
+network design with 
+3 – 4 engineers collaborating 
+on a design
+$ 15Bn* spend 
+annually in design activities 
+in the US alone
+70% of outages are due 
+to human errors in design 
+and other process areas 
+according to a Gartner 
+report
+•
+Time-Consuming: Lengthy manual design process, 
+leading to delays in project timelines and extended 
+sales cycles. This can result in lost opportunities and 
+revenue leakage.
+•
+Human Error: Manual designs are prone to errors due 
+to oversight or miscommunication among team 
+members. According to a study by Gartner, human 
+errors can account for up to 70% of network outages, 
+leading to increased costs and customer 
+dissatisfaction.
+•
+Scalability Issues: As the demand for network services 
+grows, scaling manual design processes becomes 
+increasingly difficult
+•
+Inflexibility: Manual processes can lack the agility 
+needed to adapt to changing customer requirements 
+or new technologies. This inflexibility can hinder the 
+ability to deliver customized solutions quickly.
+•
+Lack of Standardization: Different teams may use 
+varying methodologies and tools for network design, 
+leading to inconsistencies and difficulties in 
+maintaining quality across projects.
+Current manual processes have multiple challenges:
+What are we targeting with our solution:
+* Frost & Sullivan. (2020). "Telecom Network Design: Market Analysis and Trends."
+What benefits can a telco expect?
+•
+Accelerate time to revenue: Reducing the sales cycle time in commercial mid-market and above customers 
+while increasing the quality of the network design
+•
+Reduce operational costs: Quality built first time and access to as-built site information 
+
+--- Page 7 ---
+LATAM Consulting Leadership visit - Agenda
+7
+7
+Business process context and where our solution fits in
+Sales and customer requirement 
+gathering
+Network Design
+Commercialization
+Order Management & 
+Provisioning
+o Pre-sales and sales cycles
+o Requirement elicitation from customer
+o High level solution 
+o Capture requirements and share with 
+network design engineers
+o Understand requirements from sales 
+teams
+o Conceptual network design – decide 
+topology and high-level architecture
+o Logical network design – fine tune and 
+add logical parameters
+o Physical network design 
+o Finalize network design 
+o Run cost estimations on network 
+design
+o Create detailed commercial proposal
+o Create customer order
+o Order decomposition and service order 
+creation and management
+o Resource provisioning 
+o Service provisioning and activation
+o Handover to billing
+
+--- Page 8 ---
+LATAM Consulting Leadership visit - Agenda
+8
+8
+Polling Question #1
+Current challenges in network design process does not include:
+A) Difficulty in scaling
+B) Lack of standardization
+C) Limited customization options
+D) Slow and manual process
+
+--- Page 9 ---
+LATAM Consulting Leadership visit - Agenda
+9
+9
+Polling Question #1 - Answer
+Current challenges in network design process does not include:
+A) Difficulty in scaling
+B) Lack of standardization
+C) Limited customization options
+D) Slow and manual process
+
+--- Page 10 ---
+LATAM Consulting Leadership visit - Agenda
+10
+10
+Agentic AI collaboration in our solution
+Insert footer text here
+1. Recommendation Agent
+❑Evaluate parameters 
+provided in prompt and form 
+inputs
+❑Gather other inputs required 
+from human
+❑Recommend network 
+topology considering 
+parameters provided
+2. Diagram Generation Agent
+❑Use recommendation and 
+parameters provided by 
+agent 1 to generate a 
+network diagram
+❑Utilize network diagram 
+drawing rules defined 
+3. Diagram Review Agent
+❑Review diagram 
+generated against 
+diagram quality metrics 
+and rules
+❑Provide inputs to diagram 
+generation agent to 
+update network design 
+4. Explanation Agent
+❑Read diagram generated 
+by diagram generation 
+agent
+❑Explain logic and 
+rationale behind the 
+network design 
+generated to user
+5. Diagram Re-generation 
+Agent
+❑Understand and parse 
+user prompt from chat
+❑Update and regenerate 
+diagram as per user 
+prompt
+Network topology selection 
+rules
+Network design principles 
+document
+Agentic RAG
+Prompt, 
+requirements form, 
+wizard inputs
+Chat inputs on 
+design 
+changes 
+required
+
+--- Page 11 ---
+LATAM Consulting Leadership visit - Agenda
+11
+11
+Multi-agent build using LangGraph and Azure OpenAI
+Solution Architecture 
+Azure Security & Logging
+Key Vault
+Application
+Insights
+Log Analytics
+Managed
+Identity
+Frontend 
+Application 
+(React)
+User Authentication
+User Authenticated
+FastAPI App
+Agentic Flow
+Backend Application (Python+API)
+Response
+New Request
+User Query + Input file + Business Rules to 
+generate/regenerate/review diagram and 
+provide summary
+Save/Retrieve/Update chunks for diagram 
+generation / diagram regeneration / review
+Upload/Download 
+Files
+Legend for Agents
+1.Classification Agent 
+2.Recommendation Agent
+3. Diagram Generator Agent
+4. Diagram Reviewer Agent
+5. Diagram Regenerator Agent
+6. Diagram Explanation Agent
+Web App
+Web App
+LangGraph
+Agents 
+2 to 6
+Azure 
+OpenAI
+Cosmos DB
+Save, Retrieve, Update (History, Diagram, 
+My Workspace, File Upload Path)
+Azure 
+AI Search
+Azure 
+Storage (Blob)
+Agent 1
+Quoting 
+System
+JSON file with 
+details on the 
+network diagram
+For future development
+
+--- Page 12 ---
+LATAM Consulting Leadership visit - Agenda
+12
+12
+Network.AI – Current Features / Capabilities
+Home Page: Select the 
+3 options to create 
+network diagrams
+Use existing templates 
+to edit/create new 
+network diagrams 
+Answer a series of 
+questions on 
+requirements
+Start with a template 
+that aligns with your 
+customer requirements
+Provide prompt and / or 
+upload input file with 
+requirements
+USER INPUT
+USER WORKFLOW
+See a summary of the 
+diagram along with  use 
+cases
+OUTPUT / EDITS
+Edit existing diagrams 
+through UI tools or user 
+prompting
+Share saved diagrams 
+with other users for 
+collaboration
+Save and download the 
+diagram and summary 
+in png, jpg, or pdf
+Browse a history of 
+previously created and 
+saved diagrams
+
+--- Page 13 ---
+LATAM Consulting Leadership visit - Agenda
+13
+13
+Polling Question #2
+Which of the following Agentic AI framework is used for the Network Design AI solution?
+A) CrewAI
+B) LangGraph
+C) Autogen
+D) OpenAI Swarm
+
+--- Page 14 ---
+LATAM Consulting Leadership visit - Agenda
+14
+14
+Polling Question #2 - Answer
+Which of the following Agentic AI framework is used for the Network Design AI solution?
+A) CrewAI
+B) LangGraph
+C) Autogen
+D) OpenAI Swarm
+
+--- Page 15 ---
+“Unlock the full potential of you Customer Data”
+EY Customer Intelligence: AI-
+Powered Intelligence That 
+Drives Every Business 
+Decision
+April 2026
+
+--- Page 16 ---
+Customer IQ Client Meeting Deck
+16
+16
+Agenda
+01
+Client case studies 
+Pipeline and Vendors 
+How EY is helping 
+CDP and the shift to 
+composable
+02
+03
+04
+Our speakers today 
+John 
+Dubois
+Vineet M 
+Sahni
+Abhinav 
+Dewan
+Ryan 
+Webster
+Tiffany 
+Huang
+Kelly Rao
+
+--- Page 17 ---
+Customer IQ Client Meeting Deck
+17
+17
+Customer-Centric Organizations Grow 1.5-2x Faster Than Their Peers
+100
+135
+170
+2019
+2020
+2021
+2022
+2023
+2024
+Customer-Centric
+Peers
+> 1.5 -2x 
+greater 
+growth
+Organizations embracing customer-centricity experience 1.5 - 2x more revenue growth than their peers
+Revenue of customer centric organizations vs peers over time, index (100 = 2019)
+Source: EY Insights Analysis and Research
+20%
++40%
++55%
+25%
+Increase in Customer 
+Loyalty
+Increase in Customer 
+Confidence
+More consumers are 
+willing to share personal 
+data
+Of consumers want 
+brands to understand 
+their tastes and 
+preferences
+Importance of Customer Centricity
+Organizations embracing customer-centricity across all functions don't just win—they pull away from the competition.
+
+--- Page 18 ---
+Customer IQ Client Meeting Deck
+18
+18
+A CDP collects customer data from multiple sources, unifies it into a 360 view profile, and activates insights across channels in real time.
+1
+The CDP collects all types of customer data, often in real time.
+1st party data
+Owned & collected directly
+from your customers
+2nd party data
+Shared between
+organizations
+3rd party data
+Collected by external entities
+and sold to organizations
+Web & Mobile
+Transactional & POS
+CRM
+Contact center
+Feedback mgmt
+Social media
+Email
+SMS
+3rd-party enrichment
+It then unifies the data to obtain:
+A unified and dynamic
+360 customer view
+Real-time dynamic
+segmentation
+Business and enterprise intelligence
+To dynamically optimize, personalize and adjust marketing efforts to deliver a better customer experience.
+Understanding a CDP and how it works
+2
+3
+Web & Mobile
+Customer service
+Sales
+Personalized offers
+Social media
+Email
+SMS
+
+--- Page 19 ---
+Customer IQ Client Meeting Deck
+19
+19
+Selecting a CDP in four steps
+01
+Prepare
+Identify the business needs, stakeholders, 
+and success criteria required to evaluate 
+vendors.
+02
+Explore
+Determine which type of CDP best 
+matches the target-state architecture and 
+shortlist suppliers.
+03
+Evaluate
+Assess the proposed solutions against 
+prioritized use cases and enterprise 
+constraints.
+04
+POC & decide
+Pilot the leading option in a real-life 
+environment before committing to the 
+final decision.
+Pre-built platform that simplifies initial rollout 
+for teams that want a more standardized, 
+vendor-managed approach.
+Works well for common use cases and lower operational 
+complexity, but can become limiting as data, channels, and 
+decisioning needs mature.
+Modular, cloud-native approach that uses your 
+warehouse plus best-of-breed tools for identity, 
+activation, measurement, and AI.
+Gives enterprises more control, real-time access, and freedom to 
+evolve without waiting on a single vendor roadmap.
+Key characteristics
+Key characteristics
++  Easy to launch for standard use cases
++  Simpler day-1 operating model
++  Vendor-led integrations and workflows
++  Less adaptable as requirements expand
++  Built on cloud data infrastructure
++  No unnecessary duplication across tools
++  Open ecosystem of tech and activation partners
++  Real-time attribution and faster optimization
++  Better long-term economics at scale
+Select the right CDP for your organization
+Choose through a phased approach, then align the solution model — packaged or composable — to your capabilities and ambition.
+Packaged
+Composable CDP
+We partner with EY teams including EY Studio + to enable our solution across functions like 
+activation
+
+--- Page 20 ---
+Customer IQ Client Meeting Deck
+20
+20
+Margin expansion
+Reduce markdowns, prevent 
+stockouts, and automate pricing
+▪
+Increased Gross Margin Uplift
+Strategic decisioning
+Use unified customer intelligence for 
+agile strategic planning
+▪
+2-3x faster cross-functional 
+decision making
+Data monetization
+Unlock new revenue from clean rooms, 
+partnerships, and anonymized insights
+▪
+$5-20m Data-Driven Incremental 
+Revenue
+Customer growth
+Identify, retain, and grow high-value 
+customers via AI-driven activation
+▪
+10–30% Uplift in Customer Lifetime 
+Value (CLV) & Loyalty
+Marketing efficiency
+Optimize campaigns and media with real-time 
+audience segmentation & activation
+▪
+30 – 50% Campaign ROI 
+▪
+Reduced Customer Acquisition
+Cost (CAC)
+Merchandising precision
+Align assortment, pricing, and promotions 
+to actual customer needs and wants
+▪
+Incremental Revenue Growth
+Operational efficiency
+Enable frontline actions (e.g., labor planning, in-
+store execution) from insights
+▪
+Reduced Cost-to-Serve
+▪
+Increased Footfall
+Value 
+unlocked by 
+Customer 
+Intelligence
+Source: EY Insights Analysis and Research
+The Value Equation: Revenue Growth + Margin Expansion + Cost Reduction
+
+--- Page 21 ---
+Customer IQ Client Meeting Deck
+21
+21
+Most Clients Excel at Personalization, Leaders Use Intelligence across the Enterprise
+Foundation (Preferences 
+layer)
+Customer Experience 
+(Engagement Layer)
+Commercial Decisioning 
+(Decision Layer)
+Enterprise Performance 
+(Performance Layer)
+▪
+Finance: Revenue forecasting & investment allocation via 
+demand & CLV
+▪
+Performance measurement linking behavior to P&L
+▪
+Real Estate: Footprint optimization via catchment & 
+competitive analysis
+▪
+Site selection, relocations, closures
+▪
+Store Operations: Traffic-driven staffing, layout & service 
+design
+▪
+Operational efficiency & conversion optimization
+▪
+Competitive benchmarking and share-of-wallet 
+analysis
+▪
+Predictive  analytics and trend forecasting
+▪
+Innovation and new product development
+▪
+Cross-functional planning (merchandising + strategy)
+▪
+Demand sensing & assortment optimization
+▪
+Space & store clustering, price & margin 
+management 
+▪
+Data management (transactions, loyalty, digital, 
+CRM)
+▪
+Identity resolution & enrichment 
+▪
+Governance and cybersecurity
+▪
+Customer data model & golden record/ Customer 
+360
+▪
+Enablers: Cloud, data clean rooms, consent 
+management, people, process and tech
+▪
+Paid, owned, and earned activation
+▪
+Personalization & dynamic content
+▪
+Campaign orchestration and lifecycle 
+management
+▪
+Marketing measurement framework
+▪
+Martech stack modernization (CDP, CRM, 
+journey analytics)
+C
+u
+s
+t
+o
+m
+e
+r
+I
+n
+t
+e
+l
+l
+i
+g
+e
+n
+c
+e
+Customer-centric Strategy & Feedback: Insight -> Action -> Feedback 
+Marketing: Target high-value audiences 
+with optimized offers & messaging
+KPIs: ROAS, CAC, conversion rate, CLV
+Merchandising: Optimize product-price-segment 
+mix for conversion
+KPIs: Sell-through %, margin, price elasticity, 
+inventory turns
+Product Innovation: Uncover unmet needs & 
+winning attributes for development
+KPIs: Innovation success rate, trial-to-repeat %, 
+product contribution margin
+Finance & Planning: Customer spend and segment 
+trends to financial forecasts
+KPIs: Revenue forecast accuracy, margin 
+contribution, demand predictability
+Real Estate & Strategy: Target segments location & 
+shopping behavior analysis
+KPIs: Store ROI, trade area potential, new market 
+expansion
+Store & Ops: Traffic, conversion, and service 
+experience patterns
+KPIs: Conversion %, PNS, Labor productivity 
+Most organizations  
+utilize CDP for this 
+
+--- Page 22 ---
+Customer IQ Client Meeting Deck
+22
+22
+Polling Question #3
+Which of the following best captures the primary benefit of a composable CDP within EY’s Customer 
+Intelligence approach?
+A) Enables enterprises to leverage their existing cloud data platform to deliver unified customer 
+intelligence 
+B) Centralizes customer data into a single vendor-managed platform to simplify downstream 
+activation
+C) Replaces existing data warehouses with a marketing-owned customer database
+D) Focuses primarily on campaign execution and personalization for digital channels
+
+--- Page 23 ---
+Customer IQ Client Meeting Deck
+23
+23
+Polling Question #3 Answer
+Which of the following best captures the primary benefit of a composable CDP within EY’s Customer 
+Intelligence approach?
+A) Enables enterprises to leverage their existing cloud data platform to deliver unified customer 
+intelligence 
+B) Centralizes customer data into a single vendor-managed platform to simplify downstream 
+activation
+C) Replaces existing data warehouses with a marketing-owned customer database
+D) Focuses primarily on campaign execution and personalization for digital channels
+
+--- Page 24 ---
+24
+Journey to implement a Customer Data Platform
+Minimum Viable Product
+Scale & Adoption
+Platform Architecture & Infrastructure
+Strategy- and Domain-Driven Approach
+Iterative and continuous processes
+Review existing assets and 
+platform capabilities
+Thought partnership on 
+new capability and 
+strategic vision
+Identify use cases from 
+business & tech perspective
+Define 
+foundational 
+data domains
+Interim and target 
+state conceptual, 
+logical architecture
+Define Customer 360 
+Model
+Design CDP Integration 
+Layer
+Design CDP Storage 
+Layer
+Curated customer 
+data integration
+Select CDP Platform 
+Foundational 
+customer data 
+integration and 
+data governance
+Scalable compute 
+Engine
+Aggregated 
+analytical 
+datasets
+AI / ML 
+Capabilities
+Experience 
+APIs
+MVP
+Continues 
+integration and Scale 
+beyond MVP for 
+continued value 
+realization
+Getting Started
+Strategy
+Architecture
+Data foundation
+Implementation
+Activation
+AI and analytics
+Managed services
+CDP strategy, maturity 
+assessment, business case, 
+use-case roadmap, 
+operating model
+Packaged vs composable vs 
+hybrid design, target-state 
+architecture, vendor and 
+ecosystem planning
+Enterprise Data
+AI-ready data, ingestion, 
+harmonization, identity, 
+schema, governance, data 
+quality
+CDP configuration, system 
+integration, API/event 
+integration, testing, rollout
+Segmentation, 
+personalization, journey 
+orchestration, audience 
+activation, optimization
+Studio +
+Predictive modeling, GenAI 
+use cases, dashboards, 
+attribution, journey 
+analytics
+AAA
+Platform operations, 
+audience ops, training, 
+CoE, continuous 
+improvement
+Breadth of EY services to support the Journey 
+
+--- Page 25 ---
+25
+Implementation Readiness
+▪Created CDP Implementation approach 
+specific to Kimberly Clark
+▪Created Transformation Roadmap aligned to 
+the key use cases for KC
+Execution & Evaluation
+▪Define evaluation criteria and create 
+evaluation questions for KC team
+▪Manage end-to-end execution of the PoC
+▪Gather and tabulate questions responses
+PoC Requirements Gathering
+▪Define PoC Execution Scenarios aligned to 
+desired use cases
+▪Design PoC synthetic data model to enable use 
+cases
+▪Share Crawl, Walk, Run Framework aligned to 
+CDP Capabilities
+Implementation
+▪Providing hands on support integrating data 
+sources to Snowflake
+▪Implementing Customer Data Model 
+(Medallion Architecture)
+▪Providing program oversight and SMR 
+support
+Composable CDP Proof-of-Concept & Implementation at Kimberly-Clark
+For the Composable CDP PoC and Implementation we took a phased approach, first defining all of the requirements including use cases and scenarios, 
+guiding execution of the PoC, then pivoted to support the implementation the for Kimberly Clark. 
+Retail
+Phases
+Outcome
+Client Challenge
+Kimberly-Clark (KC) is undergoing a global marketing transformation and needed a future-ready, composable CDP to replace a packaged solution that created 
+data silos, limited flexibility, and vendor lock-in, while better leveraging existing investments in Snowflake. 
+Overview
+EY Approach
+EY led a structured proof-of-concept evaluating four CDP vendors, designing use cases, tailoring a Customer 360 data model, developing weighted evaluation 
+criteria, and managing execution end-to-end with business and technology teams before supporting implementation
+Value Delivered
+The PoC enabled KC to select Hightouch as its CDP of the future and the implementation approach and roadmap provided by EY helped to jumpstart the program. 
+EY continues to support the implementation through data engineering and program oversight, reducing risk and accelerating time to value leading up to the Q3 
+2026 go-live.
+2
+3
+1
+CDP Implementation Approach + CDP 
+Transformation Roadmap
+Vendor Profiles + Evaluation Questions + 
+PoC Results
+PoC Synthetic Data Model + PoC 
+Requirements & Scenarios + CDP Crawl, 
+Walk, Run Framework
+Data Integration + Customer Data Model 
+Development + Program Oversight
+4
+
+--- Page 26 ---
+Customer IQ Client Meeting Deck
+26
+26
+Ross Stores Customer Intelligence Journey
+From limited customer visibility, to enterprise wide customer intelligence that unlocks decisioning across business functions
+Phases
+Outcome
+POC
+▪Established Cleanroom environment
+▪Integration with 3rd party data vendor
+Run
+▪Managed services, continuous insights 
+and use case activation 
+▪Cloud modernization, POS 
+modernization, composable integration
+▪Loyalty Program Enablement
+Build
+▪Insights and Analytics foundation 
+▪Merchandising & Assortment 
+optimization 
+▪Promotion optimization
+▪Real estate / store expansion 
+Assessment & Discovery
+▪Evaluated & confirmed 3rd party Data 
+vendor 
+▪Assessed Ross tech infrastructure
+▪Selected core warehousing Platform
+Customer Intelligence Roadmap + 
+Prioritized use cases
+Proven feasibility of customer 
+intelligence platform
+Enterprise Decisioning Intelligence
+Insights factory + managed services
+Client Challenge
+Ross lacked visibility into who their customers were and how they shopped, with fragmented data, no PII, limited first-party signals, and no loyalty 
+program to support customer-level decision-making.
+Overview
+EY Approach
+EY designed a privacy-first, composable customer intelligence approach that anonymously linked Ross’s first-party transaction data with third-party 
+customer attributes through a secure data cleanroom, creating a scalable foundation for customer insight.
+Value Delivered
+This enabled enterprise-wide customer intelligence across business teams, supporting loyalty strategy, cross-functional decisioning, and scalable, 
+actionable insights that Ross can operate and extend over time.
+2
+3
+4
+1
+Retail
+
+--- Page 27 ---
+Customer IQ Client Meeting Deck
+27
+27
+Ross (Data Sources)
+POS Transaction 
+Data 
+Bank Partner 
+Transaction data
+Product & Store 
+hierarchy
+Secure & Easy
+Versatile and simple secure share that enables 
+encryption in transit and at rest
+Assets Utilized
+Tokenization
+Enriched, modeled
+and unified data
+Data Model /DQ 
+Framework
+Transaction Matching 
+Algorithm 
+Secure 
+Data 
+Share
+Snowflake Data Cleanroom
+Privacy and Security Preservation 
+Data is anonymized before sharing
+Collaborative Analysis 
+Enables collaborative analysis with Affinity dataset 
+without compromising sensitive information 
+DCR Custom  
+Templates
+Data Cleanroom
+Interaction with Affinity
+DCR
+templates
+Ross Data stays hidden 
+from Affinity
+Affinity Data stays 
+hidden from Client
+Snowflake Private Sharing
+Affinity (Provider)
+Demographic data
+Competitors data
+Transaction data
+EY (Data Warehouse)
+1st Party Data
+2nd Party Data
+1st Party Data
+1
+Share transaction matching fields 
+through DCR template
+Affinity returns customer IDs for 
+matched transactions
+2
+Request demographics for shared 
+customer IDs
+Affinity enables access to 
+demographics through DCR 
+template
+Transaction Matching
+Demographic Querying
+Ross Stores Customer Intelligence Cleanroom Architecture
+How we unlock customer intelligence through secure enrichment of 1st with 3rd party data
+
+--- Page 28 ---
+Customer IQ Client Meeting Deck
+28
+28
+Customer Intelligence Activation
+Transforming unified customer data into actionable insights across business functions
+Cross Functional Impact
+Real Estate/Property Dev
+▪Cannibalization
+▪Performance Benchmarking
+▪Whitespace & Market Gaps
+Strategy
+▪Business Health
+▪Brand Strategy
+▪Competitor Insights
+Loyalty
+▪Reward Structure 
+▪Program value sizing
+▪Pre-Post Loyalty 
+Merchandising
+▪Assortment Planning
+▪Cross-Shopping & Adjacency Planning
+▪Product Whitespace
+Te
+ch
+no
+lo
+gy
+&
+Da
+ta
+C
+u
+s
+t
+o
+m
+er
+Pr
+of
+il
+e
+E
+nr
+ic
+h
+m
+e
+n
+t
+A
+I
+C
+us
+to
+m
+er
+In
+si
+g
+h
+t
+s
+D
+a
+t
+a
+In
+g
+e
+st
+i
+o
+n
+I
+d
+e
+n
+ti
+t
+y
+R
+e
+s
+o
+l
+u
+ti
+o
+n
+T
+r
+a
+n
+s
+a
+c
+t
+i
+o
+n
+s
+C
+o
+n
+s
+u
+m
+e
+r
+s
+P
+r
+o
+d
+u
+c
+t
+s
+D
+e
+m
+o
+g
+r
+a
+p
+h
+i
+c
+s
+T
+a
+s
+t
+e
+s
+B
+e
+h
+a
+v
+i
+o
+u
+r
+Trusted 
+Customer 
+Profile
+Cy
+be
+rs
+ec
+ur
+it
+y
+&
+Ri
+sk
+Fr
+a
+m
+e
+w
+or
+k
+Use Case Enablement
+South Florida Underperformance and how Cross-functional insights enabled Ross to re-capture sales
+Business Opportunity
+Evaluate impact of brand strategy
+Share of Wallet
+Identified Young Shopper Migration
+Insights
+Young shoppers shifting 
+to competitors
+Decision
+Adjust regional assortments to 
+prioritize branded products
+Business Problem
+South Florida Sales Decline
+Brand Strategy Insights
+Young Shoppers favor branded 
+products
+Outcome 
+Re-capture Young 
+Shoppers and reduce 
+underperformance
+Brand Mix Behavior Analysis
+Analyze brand engagement, cross-division behavior, 
+purchase frequency, retention rate, etc.
+Merchandising
+Strategy
+Shopper Segmentation
+Segment by age, income, etc.
+
+--- Page 29 ---
+Customer IQ Client Meeting Deck
+29
+29
+Polling Question #4
+Which composable CDP pattern did EY deploy at Ross Stores to enable customer intelligence while 
+preserving privacy?
+A) Composable activation layer
+B) Data cleanroom using 3rd party Customer Data
+C) Packaged CDP with embedded identity resolution
+D) Customer 360 built through using 1st party customer data
+
+--- Page 30 ---
+Customer IQ Client Meeting Deck
+30
+30
+Polling Question #4 - Answer
+Which composable CDP pattern did EY deploy at Ross Stores to enable customer intelligence while 
+preserving privacy?
+A) Composable activation layer
+B) Data cleanroom using 3rd party Customer Data
+C) Packaged CDP with embedded identity resolution
+D) Customer 360 built through using 1st party customer data
+
+--- Page 31 ---
+Customer IQ Client Meeting Deck
+31
+31
+Other Accounts, pipeline and upcoming upskilling opportunity 
+Service Line
+Sector
+Consulting
+TMT 
+Alliance
+Solution
+Snowflake
+Composable CDP 
+Proof-of-Concept
+WBD
+Active Pipeline
+Other Active Projects
+Composable Customer Data Intelligence Platform Patterns has strategically unlocked accounts and enabled EY to deliver value that is tailored to each 
+client's specific business needs
+Upcoming Vendor Training
+Hightouch & 
+Treasure Data 
+Partner Portal 
+Training Interest 
+Survey
+
+--- Page 32 ---
+Customer IQ Client Meeting Deck
+32
+32
+Team Overview
+Saikat Acharyya
+Manager
+Muthukumar
+Kuppusamy 
+Senior
+Swapnil Kshirsagar
+Senior
+KEY CONTACTS 
+Malin Andree
+Global Sponsor
+Our team is composed of seasoned advisors with deep experience in consumer retail and supported by a cross-disciplinary delivery team with a blend of 
+business acumen and technical expertise 
+John Dubois
+Americas Sponsor
+Vineet Sahni
+Offering Lead
+EY US/CA — CORE TEAM
+EY UK&I
+EY SMRs
+EY GDS
+Vineet Sahni
+Senior Manager
+Abhinav Dewan
+Senior Manager
+Ryan Webster
+Manager
+Tiffany Huang
+Manager
+Kelly Rao
+Senior
+Michael Lutz
+Senior
+GTM
+Allan Poulsen
+Senior Manager
+Maylen de Koning
+Senior
+Reena Sam
+Senior
+Shrey Bavisi
+Manager
+Isha Pote
+Senior
+Himanshi Kothari
+Senior
+Jan Philip Werning
+SMR
+Jona Buss
+Senior Manager
+Dorian Kschesniak
+Manager
+Mattea Bertani
+Manager
+Mark Aloi
+Technical SMR
+Deborah Ma
+Supply Chain SMR
+Patrick Siconolfi
+Retail SMR
+Pooja Srivastava
+Retail SMR
+EY US
+EY US
+EY Canada
+EY Singapore
+
+--- Page 33 ---
+Thank you!
+33
+4/30/2026
