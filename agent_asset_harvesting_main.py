@@ -1,64 +1,48 @@
 import sys
+import uvicorn
 
-# ── 1. 解决 TaskSendParams 导入失败的“补丁” (必须放在最前面) ──────
-try:
-    import a2a_json_rpc.spec
-    if not hasattr(a2a_json_rpc.spec, 'TaskSendParams'):
-        # 尝试映射新版名称
-        for alt in ['ExecuteTaskParams', 'TaskParams']:
-            if hasattr(a2a_json_rpc.spec, alt):
-                a2a_json_rpc.spec.TaskSendParams = getattr(a2a_json_rpc.spec, alt)
-                break
-        else:
-            # 如果都没找到，伪造一个，防止程序崩溃
-            class Dummy: pass
-            a2a_json_rpc.spec.TaskSendParams = Dummy
-except ImportError:
-    pass
+# --- 1. RPC 补丁 (保持不变) ---
+import a2a_json_rpc.spec
+if not hasattr(a2a_json_rpc.spec, 'TaskSendParams'):
+    for alt in ['ExecuteTaskParams', 'TaskParams']:
+        if hasattr(a2a_json_rpc.spec, alt):
+            a2a_json_rpc.spec.TaskSendParams = getattr(a2a_json_rpc.spec, alt)
+            break
 
-# ── 2. 正确的导入路径 ──────────────────────────────────────────────────
+# --- 2. 修正后的导入 (根据 app.py 源码推断) ---
 from a2a_server.app import create_app
-from a2a_server.request_handlers import DefaultRequestHandler
+from a2a_server.tasks.task_manager import TaskManager
+from a2a_server.tasks.handlers.task_handler import TaskHandler # 核心改变
 from a2a_server.tasks import InMemoryTaskStore
-# 根据之前的路径推测，这里可能也需要下划线
-from a2a_types import AgentCapabilities, AgentCard, AgentSkill 
+
+# 这里的 types 如果还报错，尝试 a2a_types 或 a2a.types
+try:
+    from a2a_types import AgentCard, AgentSkill, AgentCapabilities
+except ImportError:
+    from a2a.types import AgentCard, AgentSkill, AgentCapabilities
+
 from asset_harvesting_executor import AssetHarvestingExecutor
 
 if __name__ == '__main__':
-    # 1. 定义 Skill
-    skill = AgentSkill(
-        id='asset_harvesting',
-        name='Asset Harvesting Agent',
-        description='Specialized in scanning directories and extracting asset data from documents.',
-        tags=['asset harvesting', 'document processing'],
-        examples=['Harvest assets from directory: /path/to/data'],
-    )
+    # 1. 配置 Skill 和 Card (同前)
+    skill = AgentSkill(id='asset_harvesting', name='Asset Harvesting', description='...', tags=[], examples=[])
+    agent_card = AgentCard(name='Asset Harvesting Agent', description='...', url='http://localhost:10001/', version='1.0.0', capabilities=AgentCapabilities(streaming=True), skills=[skill])
 
-    # 2. 定义 Agent Card
-    agent_card = AgentCard(
-        name='Asset Harvesting Agent',
-        description='Converts unstructured data into structured asset information.',
-        url='http://localhost:10001/',
-        version='1.0.0',
-        capabilities=AgentCapabilities(streaming=True),
-        skills=[skill],
-    )
-
-    # 3. 初始化 Executor 和 Handler
-    # 注意：这里的 DefaultRequestHandler 必须符合 a2a_server 的要求
+    # 2. 初始化 Executor
     executor = AssetHarvestingExecutor()
-    request_handler = DefaultRequestHandler(
-        agent_executor=executor,
-        task_store=InMemoryTaskStore(),
+
+    # 3. 如果找不到 DefaultRequestHandler，我们直接用 TaskHandler 包装
+    # TaskHandler 通常接受 name 和 executor
+    request_handler = TaskHandler(
+        name="asset_harvesting", # 这里的名字最好和 skill id 一致
+        agent_executor=executor
     )
 
-    # 4. 使用工厂函数创建 app (这是最重要的改变)
-    # create_app 接受一个 handlers 列表
+    # 4. 创建 App
+    # 根据 app.py: def create_app(handlers: Optional[List[TaskHandler]] = None, ...)
     app = create_app(
         handlers=[request_handler]
     )
 
-    # 5. 启动服务器
-    import uvicorn
-    # 注意：不再调用 server.build()，因为 create_app 返回的就是 FastAPI 实例
+    # 5. 启动
     uvicorn.run(app, host='0.0.0.0', port=10001)
