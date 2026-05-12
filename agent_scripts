@@ -3,127 +3,90 @@ AIzaSyBr2T5S1hbNR_mOwniqk2kBHDLuZaWE7Ug
 orchestration agent:
 import mesop as me
 import httpx
-import os
-import json
+from dataclasses import field
+from typing import List, Dict
 
-# --- 1. Global State ---
 @me.stateclass
 class State:
-    # Stores registered sub-agents: [{"name": "Harvester", "port": "8082", "status": "Unknown"}]
-    sub_agents: list[dict] = []
-    
-    # Input field buffers
+    sub_agents: List[Dict] = field(default_factory=list)
     new_agent_name: str = ""
     new_agent_port: str = ""
-    
-    # Execution logs for the UI
-    console_logs: list[str] = []
+    chat_history: List[Dict] = field(default_factory=list)
+    chat_input: str = ""
+    is_loading: bool = False
 
-# --- 2. UI Components (Pure Mesop, No external files) ---
-
-@me.page(path="/", title="A2A Orchestrator")
-def home_page():
-    state = me.state(State)
-    
-    with me.box(style=me.Style(
-        background="#fafafa",
-        padding=me.Padding.all(32),
-        min_height="100vh",
-        font_family="Roboto, sans-serif"
-    )):
-        me.text("Orchestration Agent Control Plane", type="headline-4")
-        me.text("Register and manage your sub-agent pipeline below.", type="body-1")
-
-        # Registration Form
-        with me.box(style=me.Style(
-            margin=me.Margin(top=24, bottom=24),
-            padding=me.Padding.all(20),
-            background="#fff",
-            border_radius=12,
-            border=me.Border.all(me.BorderSide(width=1, color="#ddd")),
-            display="flex",
-            gap=16,
-            align_items="center"
-        )):
-            me.input(label="Agent Role", value=state.new_agent_name, on_input=on_name_input)
-            me.input(label="Port", value=state.new_agent_port, on_input=on_port_input)
-            me.button("Add Sub-Agent", on_click=add_agent, type="flat")
-
-        me.divider()
-
-        # Pipeline Display
-        me.text("Active Pipeline Configuration", type="headline-6", style=me.Style(margin=me.Margin(bottom=16)))
-        
-        if not state.sub_agents:
-            me.text("No sub-agents registered. Add ports (e.g., 8081, 8082) to begin.", 
-                    style=me.Style(font_style="italic", color="#888"))
-        
-        for index, agent in enumerate(state.sub_agents):
-            render_agent_card(index, agent)
-
-# --- 3. UI Helpers ---
-
-def render_agent_card(index: int, agent: dict):
-    state = me.state(State)
-    status_color = "#4CAF50" if agent.get("status") == "Online" else "#f44336" if agent.get("status") == "Offline" else "#9e9e9e"
-    
-    with me.box(style=me.Style(
-        display="flex",
-        justify_content="space-between",
-        align_items="center",
-        padding=me.Padding.all(16),
-        margin=me.Margin(bottom=12),
-        background="#fff",
-        border_radius=8,
-        border=me.Border.all(me.BorderSide(width=1, color="#ececec"))
-    )):
-        with me.box():
-            me.text(f"Agent: {agent['name']}", style=me.Style(font_weight="bold"))
-            me.text(f"URL: http://localhost:{agent['port']}/a2a/tasks/send", type="caption")
-        
-        with me.box(style=me.Style(display="flex", gap=8, align_items="center")):
-            me.text(agent.get("status", "Unknown"), style=me.Style(color=status_color, font_weight="bold"))
-            me.button("Ping", on_click=lambda e: ping_agent(index), type="stroked")
-            me.button("Delete", on_click=lambda e: delete_agent(index), type="icon")
-
-# --- 4. Logic & Event Handlers ---
-
-def on_name_input(e: me.InputEvent):
-    me.state(State).new_agent_name = e.value
-
-def on_port_input(e: me.InputEvent):
-    me.state(State).new_agent_port = e.value
-
+def on_name_input(e: me.InputEvent): me.state(State).new_agent_name = e.value
+def on_port_input(e: me.InputEvent): me.state(State).new_agent_port = e.value
 def add_agent(e: me.ClickEvent):
     state = me.state(State)
-    if state.new_agent_name and state.new_agent_port:
-        state.sub_agents.append({
-            "name": state.new_agent_name,
-            "port": state.new_agent_port,
-            "status": "Unknown"
-        })
-        state.new_agent_name = ""
-        state.new_agent_port = ""
+    state.sub_agents.append({"name": state.new_agent_name, "port": state.new_agent_port})
+    state.new_agent_name = ""; state.new_agent_port = ""
 
-def delete_agent(index: int):
-    state = me.state(State)
-    state.sub_agents.pop(index)
+def on_chat_input(e: me.InputEvent): me.state(State).chat_input = e.value
 
-def ping_agent(index: int):
+async def send_message(e: me.ClickEvent):
     state = me.state(State)
-    agent = state.sub_agents[index]
-    url = f"http://localhost:{agent['port']}/a2a/tasks/send"
-    
-    try:
-        # Standard A2A Health Check Request
-        response = httpx.post(url, json={"method": "ping", "params": {}}, timeout=2.0)
-        if response.status_code == 200:
-            state.sub_agents[index]["status"] = "Online"
+    user_val = state.chat_input
+    state.chat_history.append({"role": "user", "content": user_val})
+    state.chat_input = ""
+    state.is_loading = True
+
+    # --- End-to-End Logic ---
+    if "discover" in user_val.lower():
+        # 提取路径，假设指令是 "discover /path/to/file.txt"
+        target_path = user_val.split("discover")[-1].strip()
+        
+        # 寻找注册在 8081 的 Discovery Agent
+        discovery_agent = next((a for a in state.sub_agents if a['port'] == '8081'), None)
+        
+        if not discovery_agent:
+            bot_res = "Error: Discovery Agent (Port 8081) is not registered."
         else:
-            state.sub_agents[index]["status"] = "Error"
-    except Exception:
-        state.sub_agents[index]["status"] = "Offline"
+            try:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.post(
+                        f"http://localhost:8081/a2a/tasks/send",
+                        json={"params": {"path": target_path}},
+                        timeout=5.0
+                    )
+                    data = resp.json()
+                    if "error" in data:
+                        bot_res = f"Discovery failed: {data['error']}"
+                    else:
+                        file_info = data["result"]
+                        bot_res = f"Successfully discovered {file_info['file_name']}! Content snippet: {file_info['content'][:50]}..."
+            except Exception as ex:
+                bot_res = f"Connection error: {str(ex)}"
+    else:
+        bot_res = "Type 'discover [file_path]' to test the sub-agent."
 
+    state.chat_history.append({"role": "bot", "content": bot_res})
+    state.is_loading = False
+
+# --- UI Layout (Same as previous version) ---
+@me.page(path="/")
+def app():
+    state = me.state(State)
+    with me.box(style=me.Style(display="flex", height="100vh")):
+        # Left Panel
+        with me.box(style=me.Style(width="300px", padding=me.Padding.all(20), background="#f0f0f0")):
+            me.text("Register Sub-Agents", type="headline-6")
+            me.input(label="Role", value=state.new_agent_name, on_input=on_name_input)
+            me.input(label="Port", value=state.new_agent_port, on_input=on_port_input)
+            me.button("Add", on_click=add_agent)
+            me.divider()
+            for a in state.sub_agents:
+                me.text(f"Active: {a['name']} ({a['port']})", type="caption")
+        
+        # Right Panel (Chat)
+        with me.box(style=me.Style(flex_grow=1, display="flex", flex_direction="column", padding=me.Padding.all(20))):
+            with me.box(style=me.Style(flex_grow=1, overflow_y="scroll")):
+                for m in state.chat_history:
+                    me.text(f"{m['role'].upper()}: {m['content']}", 
+                            style=me.Style(margin=me.Margin(top=10), font_weight="bold" if m['role']=='bot' else "normal"))
+            with me.box(style=me.Style(display="flex", gap=10)):
+                me.input(label="Command", value=state.chat_input, on_input=on_chat_input, style=me.Style(flex_grow=1))
+                me.button("Send", on_click=send_message, disabled=state.is_loading)
 =========
 
 
