@@ -138,30 +138,73 @@ def handle_reconciliation_and_retrieval():
 
 if __name__ == "__main__":
     app.run(port=8083)
-4. Inventory Update Agent (inventory_agent.py)
 
-Endpoint: http://localhost:8084/a2a/tasks/send
-
-Python
+完善后的 Agent 4: Inventory Management (inventory_agent.py)
 from flask import Flask, request, jsonify
 import pandas as pd
+import os
 
 app = Flask(__name__)
-MASTER_FILE = "Taxonomy_Inventory.xlsx"
+
+# --- Configuration (Based on your provided script) ---
+MASTER_FILE = '/Users/Andy.Li/Asset_Strategy/Asset Harvesting/Taxonomy & Inventory.xlsx'
+SHEET_NAME = 'Asset Inventory'
 
 @app.route('/a2a/tasks/send', methods=['POST'])
 def update_inventory():
     data = request.json
-    asset_to_add = data.get('params', {}).get('asset_data')
+    # Orchestrator should send the data to be added under 'asset_data'
+    # This can be a single asset (dict) or a list of assets
+    payload = data.get('params', {}).get('asset_data')
     
-    # Implementation of Excel writing logic
-    # In a real scenario, use pd.ExcelWriter or openpyxl to append
-    return jsonify({
-        "result": "Success: Asset Library updated with new entry."
-    })
+    if not payload:
+        return jsonify({"error": "No asset data provided"}), 400
+
+    try:
+        # 1. Data Preparation: Convert payload to DataFrame
+        if isinstance(payload, dict):
+            to_add_df = pd.DataFrame([payload])
+        else:
+            to_add_df = pd.DataFrame(payload)
+
+        # 2. Replicate your cleaning logic: Remove helper columns
+        # These columns come from the reconciliation process and shouldn't be in the Master File
+        cols_to_remove = ['Reconciliation Results', 'Reconciliation Details', 'clean_name', 'fingerprint']
+        clean_to_add = to_add_df.drop(columns=[c for c in cols_to_remove if c in to_add_df.columns])
+
+        # 3. File Verification
+        if not os.path.exists(MASTER_FILE):
+            # If file doesn't exist, create it from scratch
+            clean_to_add.to_excel(MASTER_FILE, sheet_name=SHEET_NAME, index=False)
+        else:
+            # 4. Load existing content to ensure correct concatenation
+            master_df = pd.read_excel(MASTER_FILE, sheet_name=SHEET_NAME)
+            
+            # 5. Append and Save using the 'overlay' mode you provided
+            # This ensures only the specified sheet is updated while preserving others
+            with pd.ExcelWriter(MASTER_FILE, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                updated_master = pd.concat([master_df, clean_to_add], ignore_index=True)
+                updated_master.to_excel(writer, sheet_name=SHEET_NAME, index=False)
+
+        return jsonify({
+            "jsonrpc": "2.0",
+            "result": {
+                "message": "Update Successful!",
+                "items_appended": len(clean_to_add),
+                "file_path": MASTER_FILE,
+                "sheet": SHEET_NAME
+            },
+            "id": data.get('id')
+        })
+
+    except Exception as e:
+        # Return the error message to the Orchestrator
+        return jsonify({"error": f"An error occurred during the update: {str(e)}"}), 500
 
 if __name__ == "__main__":
+    # Runs on port 8084 by default
     app.run(port=8084)
+
 5. Benchmarking Agent (benchmarking_agent.py)
 
 Endpoint: http://localhost:8085/a2a/tasks/send
