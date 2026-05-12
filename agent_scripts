@@ -1,5 +1,136 @@
 AIzaSyBr2T5S1hbNR_mOwniqk2kBHDLuZaWE7Ug
 
+orchestration agent:
+import mesop as me
+import httpx
+import os
+import json
+
+# --- 1. Global State ---
+@me.stateclass
+class State:
+    # Stores registered sub-agents: [{"name": "Harvester", "port": "8082", "status": "Unknown"}]
+    sub_agents: list[dict] = []
+    
+    # Input field buffers
+    new_agent_name: str = ""
+    new_agent_port: str = ""
+    
+    # Execution logs for the UI
+    console_logs: list[str] = []
+
+# --- 2. UI Components (Pure Mesop, No external files) ---
+
+@me.page(path="/", title="A2A Orchestrator")
+def home_page():
+    state = me.state(State)
+    
+    with me.box(style=me.Style(
+        background="#fafafa",
+        padding=me.Padding.all(32),
+        min_height="100vh",
+        font_family="Roboto, sans-serif"
+    )):
+        me.text("Orchestration Agent Control Plane", type="headline-4")
+        me.text("Register and manage your sub-agent pipeline below.", type="body-1")
+
+        # Registration Form
+        with me.box(style=me.Style(
+            margin=me.Margin(top=24, bottom=24),
+            padding=me.Padding.all(20),
+            background="#fff",
+            border_radius=12,
+            border=me.Border.all(me.BorderSide(width=1, color="#ddd")),
+            display="flex",
+            gap=16,
+            align_items="center"
+        )):
+            me.input(label="Agent Role", value=state.new_agent_name, on_input=on_name_input)
+            me.input(label="Port", value=state.new_agent_port, on_input=on_port_input)
+            me.button("Add Sub-Agent", on_click=add_agent, type="flat")
+
+        me.divider()
+
+        # Pipeline Display
+        me.text("Active Pipeline Configuration", type="headline-6", style=me.Style(margin=me.Margin(bottom=16)))
+        
+        if not state.sub_agents:
+            me.text("No sub-agents registered. Add ports (e.g., 8081, 8082) to begin.", 
+                    style=me.Style(font_style="italic", color="#888"))
+        
+        for index, agent in enumerate(state.sub_agents):
+            render_agent_card(index, agent)
+
+# --- 3. UI Helpers ---
+
+def render_agent_card(index: int, agent: dict):
+    state = me.state(State)
+    status_color = "#4CAF50" if agent.get("status") == "Online" else "#f44336" if agent.get("status") == "Offline" else "#9e9e9e"
+    
+    with me.box(style=me.Style(
+        display="flex",
+        justify_content="space-between",
+        align_items="center",
+        padding=me.Padding.all(16),
+        margin=me.Margin(bottom=12),
+        background="#fff",
+        border_radius=8,
+        border=me.Border.all(me.BorderSide(width=1, color="#ececec"))
+    )):
+        with me.box():
+            me.text(f"Agent: {agent['name']}", style=me.Style(font_weight="bold"))
+            me.text(f"URL: http://localhost:{agent['port']}/a2a/tasks/send", type="caption")
+        
+        with me.box(style=me.Style(display="flex", gap=8, align_items="center")):
+            me.text(agent.get("status", "Unknown"), style=me.Style(color=status_color, font_weight="bold"))
+            me.button("Ping", on_click=lambda e: ping_agent(index), type="stroked")
+            me.button("Delete", on_click=lambda e: delete_agent(index), type="icon")
+
+# --- 4. Logic & Event Handlers ---
+
+def on_name_input(e: me.InputEvent):
+    me.state(State).new_agent_name = e.value
+
+def on_port_input(e: me.InputEvent):
+    me.state(State).new_agent_port = e.value
+
+def add_agent(e: me.ClickEvent):
+    state = me.state(State)
+    if state.new_agent_name and state.new_agent_port:
+        state.sub_agents.append({
+            "name": state.new_agent_name,
+            "port": state.new_agent_port,
+            "status": "Unknown"
+        })
+        state.new_agent_name = ""
+        state.new_agent_port = ""
+
+def delete_agent(index: int):
+    state = me.state(State)
+    state.sub_agents.pop(index)
+
+def ping_agent(index: int):
+    state = me.state(State)
+    agent = state.sub_agents[index]
+    url = f"http://localhost:{agent['port']}/a2a/tasks/send"
+    
+    try:
+        # Standard A2A Health Check Request
+        response = httpx.post(url, json={"method": "ping", "params": {}}, timeout=2.0)
+        if response.status_code == 200:
+            state.sub_agents[index]["status"] = "Online"
+        else:
+            state.sub_agents[index]["status"] = "Error"
+    except Exception:
+        state.sub_agents[index]["status"] = "Offline"
+
+=========
+
+
+
+
+
+
 第一部分：独立 Agent 脚本 (Python - English Only)
 
 你需要将以下代码分别保存为 5 个 .py 文件并运行。
