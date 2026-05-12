@@ -5,23 +5,28 @@ from dataclasses import field
 # --- 1. Global State ---
 @me.stateclass
 class State:
-    # Python 3.9+ lowercase type hinting
+    # Sub-agent registry: list of dicts
     sub_agents: list[dict] = field(default_factory=list)
+    
+    # Input buffers
     new_agent_name: str = ""
     new_agent_port: str = ""
+    
+    # Chat system
     chat_history: list[dict] = field(default_factory=list)
     chat_input: str = ""
     is_loading: bool = False
 
 # --- 2. Event Handlers ---
 
-def on_name_blur(e: me.InputEvent):
+# Using direct input updates but optimized for Mesop processing
+def on_name_input(e: me.InputEvent):
     me.state(State).new_agent_name = e.value
 
-def on_port_blur(e: me.InputEvent):
+def on_port_input(e: me.InputEvent):
     me.state(State).new_agent_port = e.value
 
-def on_chat_blur(e: me.InputEvent):
+def on_chat_input(e: me.InputEvent):
     me.state(State).chat_input = e.value
 
 def add_agent(e: me.ClickEvent):
@@ -29,47 +34,55 @@ def add_agent(e: me.ClickEvent):
     if state.new_agent_name and state.new_agent_port:
         state.sub_agents.append({
             "name": state.new_agent_name, 
-            "port": state.new_agent_port
+            "port": str(state.new_agent_port).strip()
         })
         state.new_agent_name = ""
         state.new_agent_port = ""
 
 async def send_message(e: me.ClickEvent):
     state = me.state(State)
-    user_val = state.chat_input
+    user_val = state.chat_input.strip()
     if not user_val:
         return
     
+    # Update chat UI immediately
     state.chat_history.append({"role": "user", "content": user_val})
     state.chat_input = ""
     state.is_loading = True
 
     bot_res = ""
+    # Command Pattern: discover [file_path]
     if "discover" in user_val.lower():
         target_path = user_val.split("discover")[-1].strip()
-        # Find the agent registered on 8081
-        discovery_agent = next((a for a in state.sub_agents if a['port'] == '8081'), None)
         
-        if not discovery_agent:
-            bot_res = "Error: Discovery Agent not found on Port 8081."
+        # Orchestrator looks for the agent registered on 8081
+        agent_8081 = next((a for a in state.sub_agents if a['port'] == '8081'), None)
+        
+        if not agent_8081:
+            bot_res = "Orchestrator Error: No Discovery Agent found on Port 8081. Please register it first."
         else:
             try:
                 async with httpx.AsyncClient() as client:
-                    resp = await client.post(
-                        "http://localhost:8081/a2a/tasks/send",
+                    # A2A Communication Protocol
+                    response = await client.post(
+                        f"http://localhost:8081/a2a/tasks/send",
                         json={"params": {"path": target_path}},
-                        timeout=10.0
+                        timeout=15.0
                     )
-                    data = resp.json()
-                    res = data.get("result", {})
-                    if res and res.get("status") == "Found":
-                        bot_res = f"Success: {res.get('file_name')}. Content: {res.get('content')[:100]}..."
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        result = data.get("result", {})
+                        if isinstance(result, dict) and result.get("status") == "Found":
+                            bot_res = f"Discovery Successful!\nFile: {result.get('file_name')}\nSnippet: {result.get('content', '')[:100]}..."
+                        else:
+                            bot_res = f"Agent Feedback: {result.get('status', 'File not found or unreadable.')}"
                     else:
-                        bot_res = f"Status: {res.get('status', 'Not Found or Error')}"
+                        bot_res = f"Sub-agent Error: Received HTTP {response.status_code}"
             except Exception as ex:
-                bot_res = f"Network Connection Error: {str(ex)}"
+                bot_res = f"Orchestration Pipeline Failed: {str(ex)}"
     else:
-        bot_res = "System: Use 'discover [file_path]' to test the sub-agent."
+        bot_res = "I am the Orchestrator. Use 'discover [path]' to trigger the sub-agent pipeline."
 
     state.chat_history.append({"role": "bot", "content": bot_res})
     state.is_loading = False
@@ -80,47 +93,59 @@ async def send_message(e: me.ClickEvent):
 def app():
     state = me.state(State)
     
+    # Main Dashboard container
     with me.box(style=me.Style(display="flex", height="100vh", font_family="Inter, sans-serif")):
         
-        # Sidebar Container
+        # LEFT PANEL: Registry
         with me.box(style=me.Style(
-            width="320px", 
-            padding=me.Padding.all(24), 
-            background="#f8f9fa",
-            # Standard border syntax for Mesop
+            width="300px", 
+            padding=me.Padding.all(20), 
+            background="#f4f4f4",
             border=me.Border.all(me.BorderSide(width=1, color="#ddd", style="solid"))
         )):
-            me.text("Sub-Agent Manager", type="headline-6")
-            
-            with me.box(style=me.Style(margin=me.Margin(top=16))):
-                me.input(label="Agent Name", on_blur=on_name_input)
-                me.input(label="Port", on_blur=on_port_blur)
-                me.button("Register", on_click=add_agent, type="flat")
+            me.text("System Registry", type="headline-6")
+            me.input(label="Agent Role", value=state.new_agent_name, on_input=on_name_input)
+            me.input(label="Port", value=state.new_agent_port, on_input=on_port_input)
+            me.button("Register Agent", on_click=add_agent, type="flat", style=me.Style(margin=me.Margin(top=10)))
             
             me.divider(style=me.Style(margin=me.Margin(vertical=20)))
             
-            me.text("Active Cluster:", style=me.Style(font_weight="bold"))
+            me.text("Pipeline Nodes:", style=me.Style(font_weight="bold", margin=me.Margin(bottom=10)))
             for agent in state.sub_agents:
-                with me.box(style=me.Style(padding=me.Padding.all(8), margin=me.Margin(top=5), background="#fff")):
-                    me.text(f"{agent['name']} @ {agent['port']}")
+                with me.box(style=me.Style(padding=me.Padding.all(8), background="#fff", margin=me.Margin(bottom=5))):
+                    me.text(f"{agent['name']} (Port: {agent['port']})", style=me.Style(font_size=12))
 
-        # Chatbot Interface
+        # RIGHT PANEL: Chatbot
         with me.box(style=me.Style(flex_grow=1, display="flex", flex_direction="column")):
-            
-            # Chat History
-            with me.box(style=me.Style(flex_grow=1, padding=me.Padding.all(24), overflow_y="scroll")):
+            # Header
+            with me.box(style=me.Style(padding=me.Padding.all(15), border_bottom=me.Border.all(me.BorderSide(width=1, color="#eee")))):
+                me.text("AI Agent Orchestrator", type="headline-5")
+
+            # Chat Scroll Area
+            with me.box(style=me.Style(flex_grow=1, padding=me.Padding.all(20), overflow_y="scroll")):
                 for m in state.chat_history:
                     is_user = m['role'] == "user"
                     with me.box(style=me.Style(
-                        margin=me.Margin(bottom=12),
+                        margin=me.Margin(bottom=15),
                         padding=me.Padding.all(12),
-                        background="#e3f2fd" if is_user else "#f1f1f1",
                         border_radius=8,
-                        align_self="flex-end" if is_user else "flex-start"
+                        background="#e1f5fe" if is_user else "#eeeeee",
+                        align_self="flex-end" if is_user else "flex-start",
+                        max_width="75%"
                     )):
                         me.text(m['content'])
 
-            # Footer Input
-            with me.box(style=me.Style(padding=me.Padding.all(24), display="flex", gap=12)):
-                me.input(label="Chat / Command", on_blur=on_chat_blur, value=state.chat_input, style=me.Style(flex_grow=1))
-                me.button("Run", on_click=send_message, disabled=state.is_loading, type="raised")
+            # Footer: Controls
+            with me.box(style=me.Style(padding=me.Padding.all(20), display="flex", gap=10, border_top=me.Border.all(me.BorderSide(width=1, color="#eee")))):
+                me.input(
+                    label="Command (e.g., discover test.txt)", 
+                    value=state.chat_input, 
+                    on_input=on_chat_input, 
+                    style=me.Style(flex_grow=1)
+                )
+                me.button(
+                    "Execute", 
+                    on_click=send_message, 
+                    disabled=state.is_loading, 
+                    type="raised"
+                )
