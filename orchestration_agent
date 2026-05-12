@@ -5,21 +5,15 @@ from dataclasses import field
 # --- 1. Global State ---
 @me.stateclass
 class State:
-    # Sub-agent registry: list of dicts
     sub_agents: list[dict] = field(default_factory=list)
-    
-    # Input buffers
     new_agent_name: str = ""
     new_agent_port: str = ""
-    
-    # Chat system
     chat_history: list[dict] = field(default_factory=list)
     chat_input: str = ""
     is_loading: bool = False
 
 # --- 2. Event Handlers ---
 
-# Using direct input updates but optimized for Mesop processing
 def on_name_input(e: me.InputEvent):
     me.state(State).new_agent_name = e.value
 
@@ -45,27 +39,22 @@ async def send_message(e: me.ClickEvent):
     if not user_val:
         return
     
-    # Update chat UI immediately
     state.chat_history.append({"role": "user", "content": user_val})
     state.chat_input = ""
     state.is_loading = True
 
     bot_res = ""
-    # Command Pattern: discover [file_path]
     if "discover" in user_val.lower():
         target_path = user_val.split("discover")[-1].strip()
-        
-        # Orchestrator looks for the agent registered on 8081
         agent_8081 = next((a for a in state.sub_agents if a['port'] == '8081'), None)
         
         if not agent_8081:
-            bot_res = "Orchestrator Error: No Discovery Agent found on Port 8081. Please register it first."
+            bot_res = "Orchestrator Error: No Discovery Agent found on Port 8081."
         else:
             try:
                 async with httpx.AsyncClient() as client:
-                    # A2A Communication Protocol
                     response = await client.post(
-                        f"http://localhost:8081/a2a/tasks/send",
+                        "http://localhost:8081/a2a/tasks/send",
                         json={"params": {"path": target_path}},
                         timeout=15.0
                     )
@@ -74,15 +63,15 @@ async def send_message(e: me.ClickEvent):
                         data = response.json()
                         result = data.get("result", {})
                         if isinstance(result, dict) and result.get("status") == "Found":
-                            bot_res = f"Discovery Successful!\nFile: {result.get('file_name')}\nSnippet: {result.get('content', '')[:100]}..."
+                            bot_res = f"Discovery Successful!\nFile: {result.get('file_name')}\nContent: {result.get('content', '')[:100]}..."
                         else:
-                            bot_res = f"Agent Feedback: {result.get('status', 'File not found or unreadable.')}"
+                            bot_res = f"Agent Feedback: {result.get('status', 'Not found')}"
                     else:
-                        bot_res = f"Sub-agent Error: Received HTTP {response.status_code}"
+                        bot_res = f"Sub-agent Error: HTTP {response.status_code}"
             except Exception as ex:
-                bot_res = f"Orchestration Pipeline Failed: {str(ex)}"
+                bot_res = f"Pipeline Failed: {str(ex)}"
     else:
-        bot_res = "I am the Orchestrator. Use 'discover [path]' to trigger the sub-agent pipeline."
+        bot_res = "System: Use 'discover [path]' to trigger the pipeline."
 
     state.chat_history.append({"role": "bot", "content": bot_res})
     state.is_loading = False
@@ -93,10 +82,9 @@ async def send_message(e: me.ClickEvent):
 def app():
     state = me.state(State)
     
-    # Main Dashboard container
     with me.box(style=me.Style(display="flex", height="100vh", font_family="Inter, sans-serif")):
         
-        # LEFT PANEL: Registry
+        # Sidebar
         with me.box(style=me.Style(
             width="300px", 
             padding=me.Padding.all(20), 
@@ -108,20 +96,19 @@ def app():
             me.input(label="Port", value=state.new_agent_port, on_input=on_port_input)
             me.button("Register Agent", on_click=add_agent, type="flat", style=me.Style(margin=me.Margin(top=10)))
             
-            me.divider(style=me.Style(margin=me.Margin(vertical=20)))
+            # Use specific top/bottom instead of 'vertical' keyword
+            me.divider(style=me.Style(margin=me.Margin(top=20, bottom=20)))
             
             me.text("Pipeline Nodes:", style=me.Style(font_weight="bold", margin=me.Margin(bottom=10)))
             for agent in state.sub_agents:
                 with me.box(style=me.Style(padding=me.Padding.all(8), background="#fff", margin=me.Margin(bottom=5))):
                     me.text(f"{agent['name']} (Port: {agent['port']})", style=me.Style(font_size=12))
 
-        # RIGHT PANEL: Chatbot
+        # Chat Panel
         with me.box(style=me.Style(flex_grow=1, display="flex", flex_direction="column")):
-            # Header
             with me.box(style=me.Style(padding=me.Padding.all(15), border_bottom=me.Border.all(me.BorderSide(width=1, color="#eee")))):
                 me.text("AI Agent Orchestrator", type="headline-5")
 
-            # Chat Scroll Area
             with me.box(style=me.Style(flex_grow=1, padding=me.Padding.all(20), overflow_y="scroll")):
                 for m in state.chat_history:
                     is_user = m['role'] == "user"
@@ -135,10 +122,9 @@ def app():
                     )):
                         me.text(m['content'])
 
-            # Footer: Controls
             with me.box(style=me.Style(padding=me.Padding.all(20), display="flex", gap=10, border_top=me.Border.all(me.BorderSide(width=1, color="#eee")))):
                 me.input(
-                    label="Command (e.g., discover test.txt)", 
+                    label="Command Entry", 
                     value=state.chat_input, 
                     on_input=on_chat_input, 
                     style=me.Style(flex_grow=1)
