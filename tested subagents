@@ -1,0 +1,238 @@
+from flask import Flask, request, jsonify
+import os
+
+app = Flask(__name__)
+
+@app.route('/a2a/tasks/send', methods=['POST'])
+def scan_path():
+    data = request.json
+    # Expected param: root_path
+    path = data.get('params', {}).get('root_path', '')
+    valid_exts = ('.pdf', '.ppt', '.pptx', '.docx', '.txt', '.json')
+    manifest = []
+    
+    if os.path.exists(path):
+        for root, _, files in os.walk(path):
+            for f in files:
+                if f.lower().endswith(valid_exts):
+                    manifest.append({
+                        "file_name": f, 
+                        "file_path": os.path.join(root, f)
+                    })
+    
+    return jsonify({
+        "jsonrpc": "2.0", 
+        "result": manifest, 
+        "id": data.get('id')
+    })
+
+if __name__ == "__main__":
+    app.run(port=8081)
+
+
+from flask import Flask, request, jsonify
+import json
+import os
+from google import genai
+
+app = Flask(__name__)
+
+os.environ["GOOGLE_API_KEY"] = "YOUR_API_KEY"
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+MODEL_ID = "gemini-2.5-flash"
+
+PROMPT_FILE = "/Users/Andy.Li/Asset_Strategy/Asset Harvesting/3_asset_harvest_prompt.md"
+SCHEMA_FILE = "/Users/Andy.Li/Asset_Strategy/Asset Harvesting/1_schema.json"
+
+# Mandatory value mapping to prevent numeric-only returns
+VALUE_MAP = {
+    "Monetized": {"1": "1 - Yes (licensed)", "2": "2 - No (consulting asset)"},  
+    "Category": {"1": "1 - Paper", "2": "2 - Solution Component", "3": "3 - Full Solution"},  
+    "Maturity": {"1": "1 - High", "2": "2 - Medium", "3": "3 - Low", "4": "4 - None"},  
+    "Priority": {"1": "1 - Strategic Differentiator", "2": "2 - Non-Strategic, But Required", "3": "3 - Opportunistic", "4": "4 - Not Needed"},  
+    "Complexity": {"1": "1 - High", "2": "2 - Medium", "3": "3 - Low"},  
+    "Sector": {"1": "1 - Agnostic", "2": "2 - IP", "3": "3 - E&U", "4": "4 - ADM"},  
+    "Value Stream": {"1": "1 - Strategy", "2": "2 - Design & Engineer", "3": "3 - Source & Plan", "4": "4 - Make", "5": "5 - Distribute", "6": "6 - Operate", "7": "7 - Recover"},  
+    "Engagement Phase": {"1": "1 - Sales", "2": "2 - Delivery"},  
+    "AI Feature": {"1": "1 - LLM", "2": "2 - Non-LLM", "3": "3 - No AI"},  
+    "Capability Pool": {"1": "1 - Business Operations", "2": "2 - Manufacturing Technology", "3": "3 - AI Technology", "4": "4 - People & Change", "5": "5 - Regulatory Compliance", "6": "6 - Custom Application Development", "7": "7 - Product Engineering", "8": "8 - Operational Excellence", "9": "9 - Enterprise Technology"},  
+    "Asset Status": {"1": "1 - Exists - ready to use", "2": "2 - Exists - modernization or updates needed", "3": "3 - New Asset needed", "4": "4 - No asset needed"},  
+    "Target Persona": {"1": "1 - C-level", "2": "2 - Ops Leader", "3": "3 - Plant Manager"}
+}
+
+
+def load_resources():
+    with open(PROMPT_FILE, 'r') as f:
+        prompt_tmp = f.read()
+    with open(SCHEMA_FILE, 'r') as f:
+        schema_json = json.load(f)
+    return prompt_tmp, schema_json
+
+
+@app.route('/a2a/tasks/send', methods=['POST'])
+def harvest():
+    data = request.json
+    source_text = data.get('params', {}).get('content', '')
+
+    if not source_text:
+        return jsonify({"error": "No content provided"}), 400
+
+    try:
+        # 1. Load MD Prompt and JSON Schema
+        prompt_tmp, schema_json = load_resources()
+
+        # 2. Inject variables into the MD template
+        final_prompt = prompt_tmp.replace("{{schema_definition}}", json.dumps(schema_json, indent=2))
+        final_prompt = final_prompt.replace("{{source_text}}", source_text)
+
+        # 3. Call LLM with the final prompt
+        response = client.models.generate_content(
+            model=MODEL_ID,
+            contents=final_prompt,
+            config=genai.types.GenerateContentConfig(
+                response_mime_type="application/json",
+                max_output_tokens=2048
+            )        )
+        
+        # 4. Parse LLM response and post-process values
+        raw_text = response.text.strip()
+
+        # clean potential markdown backticks if LLM ignore the instruction and return markdown format
+        if raw_text.startswith("```json"):
+            raw_text = raw_text.replace("```json", "").replace("```", "").strip()
+
+        extracted_data = json.loads(raw_text)
+
+        # 5. Post-processing: Correct numeric labels to full string
+        for asset in extracted_data.get('assets', []):
+            for field, mapping in VALUE_MAP.items():
+                val = str(asset.get(field, ""))
+                if val in mapping:
+                    asset[field] = mapping[val]
+            
+        return jsonify({
+            "jsonrpc": "2.0", 
+            "result": extracted_data, 
+            "id": data.get('id')
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(port=8082)
+
+
+from flask import Flask, request, jsonify
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import os
+
+app = Flask(__name__)
+MASTER_FILE = "/Users/Andy.Li/Asset_Strategy/Asset Harvesting/Taxonomy & Inventory.xlsx"
+
+@app.route('/a2a/tasks/send', methods=['POST'])
+def handle_reconciliation_and_retrieval():
+    data = request.json
+    method = data.get('method')
+    params = data.get('params', {})
+    
+    if not os.path.exists(MASTER_FILE):
+        return jsonify({"error": "Master Library not found"}), 404
+
+    # df = pd.read_excel(MASTER_FILE)
+    df = pd.read_excel(MASTER_FILE, sheet_name='Asset Inventory')
+    vectorizer = TfidfVectorizer(stop_words='english')
+    
+    if method == "reconcile":
+        # Test 1: Deduplication Logic
+        new_desc = params.get('description', '')
+        all_text = df['Asset Description'].fillna("").tolist() + [new_desc]
+        tfidf = vectorizer.fit_transform(all_text)
+        score = cosine_similarity(tfidf[-1], tfidf[:-1]).max() if len(df) > 0 else 0
+        
+        decision = "Add into" if score < 0.85 else "Duplicate should be removed"
+        return jsonify({
+            "result": {"decision": decision, "similarity_score": score}
+        })
+    
+    elif method == "search":
+        # Test 2: Semantic Retrieval Top 3
+        query = params.get('query', '')
+        all_text = df['Asset Description'].fillna("").tolist() + [query]
+        tfidf = vectorizer.fit_transform(all_text)
+        scores = cosine_similarity(tfidf[-1], tfidf[:-1])[0]
+        df['score'] = scores
+        top_3 = df.sort_values(by='score', ascending=False).head(3)
+        return jsonify({
+            "result": top_3.to_dict(orient='records')
+        })
+
+if __name__ == "__main__":
+    app.run(port=8083)
+
+
+from flask import Flask, request, jsonify
+import pandas as pd
+import os
+
+app = Flask(__name__)
+
+# --- Configuration (Based on your provided script) ---
+MASTER_FILE = '/Users/Andy.Li/Asset_Strategy/Asset Harvesting/Taxonomy & Inventory.xlsx'
+SHEET_NAME = 'Asset Inventory'
+
+@app.route('/a2a/tasks/send', methods=['POST'])
+def update_inventory():
+    data = request.json
+    # Orchestrator should send the data to be added under 'asset_data'
+    # This can be a single asset (dict) or a list of assets
+    payload = data.get('params', {}).get('asset_data')
+    
+    if not payload:
+        return jsonify({"error": "No asset data provided"}), 400
+
+    try:
+        # 1. Data Preparation: Convert payload to DataFrame
+        if isinstance(payload, dict):
+            to_add_df = pd.DataFrame([payload])
+        else:
+            to_add_df = pd.DataFrame(payload)
+
+        # 2. Replicate your cleaning logic: Remove helper columns
+        # These columns come from the reconciliation process and shouldn't be in the Master File
+        cols_to_remove = ['Reconciliation Results', 'Reconciliation Details', 'clean_name', 'fingerprint']
+        clean_to_add = to_add_df.drop(columns=[c for c in cols_to_remove if c in to_add_df.columns])
+
+        # 3. File Verification
+        if not os.path.exists(MASTER_FILE):
+            # If file doesn't exist, create it from scratch
+            clean_to_add.to_excel(MASTER_FILE, sheet_name=SHEET_NAME, index=False)
+        else:
+            # 4. Load existing content to ensure correct concatenation
+            master_df = pd.read_excel(MASTER_FILE, sheet_name=SHEET_NAME)
+            
+            # 5. Append and Save using the 'overlay' mode you provided
+            # This ensures only the specified sheet is updated while preserving others
+            with pd.ExcelWriter(MASTER_FILE, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                updated_master = pd.concat([master_df, clean_to_add], ignore_index=True)
+                updated_master.to_excel(writer, sheet_name=SHEET_NAME, index=False)
+
+        return jsonify({
+            "jsonrpc": "2.0",
+            "result": {
+                "message": "Update Successful!",
+                "items_appended": len(clean_to_add),
+                "file_path": MASTER_FILE,
+                "sheet": SHEET_NAME
+            },
+            "id": data.get('id')
+        })
+
+    except Exception as e:
+        # Return the error message to the Orchestrator
+        return jsonify({"error": f"An error occurred during the update: {str(e)}"}), 500
+
+if __name__ == "__main__":
+    # Runs on port 8084 by default
+    app.run(port=8084)
