@@ -1,0 +1,59 @@
+I0512 12:41:28.499621 8311953600 server.py:83] Static folder enabled: /Users/Andy.Li/Asset_Strategy/Asset Harvesting/static
+Traceback (most recent call last):
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/dataclass_utils/dataclass_utils.py", line 62, in dataclass_with_defaults
+    hash(classVar)
+    ~~~~^^^^^^^^^^
+TypeError: unhashable type: 'list'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/Andy.Li/Asset_Strategy/.venv/bin/mesop", line 10, in <module>
+    sys.exit(run_main())
+             ~~~~~~~~^^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/bin/bin.py", line 285, in run_main
+    app.run(main)
+    ~~~~~~~^^^^^^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/absl/app.py", line 367, in run
+    _run_main(main, args)
+    ~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/absl/app.py", line 312, in _run_main
+    sys.exit(main(argv))
+             ~~~~^^^^^^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/bin/bin.py", line 99, in main
+    app = create_app(
+      prod_mode=FLAGS.prod,
+      run_block=lambda: execute_main_module(absolute_path=absolute_path),
+    )
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/server/wsgi_app.py", line 38, in create_app
+    run_block()
+    ~~~~~~~~~^^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/bin/bin.py", line 101, in <lambda>
+    run_block=lambda: execute_main_module(absolute_path=absolute_path),
+                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/bin/bin.py", line 272, in execute_main_module
+    raise e
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/bin/bin.py", line 262, in execute_main_module
+    execute_module(
+    ~~~~~~~~~~~~~~^
+      module_path=absolute_path,
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+      module_name=get_module_name_from_path(absolute_path),
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/cli/execute_module.py", line 12, in execute_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1023, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/Andy.Li/Asset_Strategy/Asset Harvesting/agent_main.py", line 7, in <module>
+    @me.stateclass
+     ^^^^^^^^^^^^^
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/__init__.py", line 291, in stateclass
+    return wrapper(cls)
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/__init__.py", line 281, in wrapper
+    dataclass_cls = dataclass_with_defaults(cls, **kw_args)
+  File "/Users/Andy.Li/Asset_Strategy/.venv/lib/python3.13/site-packages/mesop/dataclass_utils/dataclass_utils.py", line 68, in dataclass_with_defaults
+    raise MesopDeveloperException(error_message) from exc
+mesop.exceptions.MesopDeveloperException: **Mesop Developer Error:** mutable default <class 'list'> for field sub_agents is not allowed: use default_factory for state class State. See: https://mesop-dev.github.io/mesop/guides/state-management/#use-immutable-default-values
