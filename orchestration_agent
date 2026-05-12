@@ -2,32 +2,25 @@ import mesop as me
 import httpx
 from dataclasses import field
 
-# --- 1. Global State Definition ---
+# --- 1. Global State ---
 @me.stateclass
 class State:
-    # Stores sub-agent configurations: [{"name": "...", "port": "..."}]
+    # Python 3.9+ lowercase type hinting
     sub_agents: list[dict] = field(default_factory=list)
-    
-    # Temporary buffers for form inputs
     new_agent_name: str = ""
     new_agent_port: str = ""
-    
-    # Chatbot history and state
     chat_history: list[dict] = field(default_factory=list)
     chat_input: str = ""
     is_loading: bool = False
 
 # --- 2. Event Handlers ---
 
-# Sync name only when input loses focus (prevents stuttering)
 def on_name_blur(e: me.InputEvent):
     me.state(State).new_agent_name = e.value
 
-# Sync port only when input loses focus
 def on_port_blur(e: me.InputEvent):
     me.state(State).new_agent_port = e.value
 
-# Buffer chat input
 def on_chat_blur(e: me.InputEvent):
     me.state(State).chat_input = e.value
 
@@ -38,7 +31,6 @@ def add_agent(e: me.ClickEvent):
             "name": state.new_agent_name, 
             "port": state.new_agent_port
         })
-        # Reset buffers
         state.new_agent_name = ""
         state.new_agent_port = ""
 
@@ -48,48 +40,37 @@ async def send_message(e: me.ClickEvent):
     if not user_val:
         return
     
-    # Update UI with user message
     state.chat_history.append({"role": "user", "content": user_val})
     state.chat_input = ""
     state.is_loading = True
 
-    # --- Orchestration Logic ---
     bot_res = ""
     if "discover" in user_val.lower():
-        # Parsing command: discover [path]
         target_path = user_val.split("discover")[-1].strip()
-        
-        # Look for Discovery Agent on Port 8081
+        # Find the agent registered on 8081
         discovery_agent = next((a for a in state.sub_agents if a['port'] == '8081'), None)
         
         if not discovery_agent:
-            bot_res = "System Error: No Discovery Agent registered on Port 8081."
+            bot_res = "Error: Discovery Agent not found on Port 8081."
         else:
             try:
                 async with httpx.AsyncClient() as client:
-                    # Request to Sub-Agent
                     resp = await client.post(
                         "http://localhost:8081/a2a/tasks/send",
                         json={"params": {"path": target_path}},
                         timeout=10.0
                     )
                     data = resp.json()
-                    
-                    # Safe dictionary access to prevent 'list index' errors
-                    if isinstance(data, dict) and "result" in data:
-                        res = data["result"]
-                        if isinstance(res, dict) and res.get("status") == "Found":
-                            bot_res = f"Success: {res.get('file_name')} found. Content: {res.get('content')[:100]}..."
-                        else:
-                            bot_res = f"File Status: {res.get('status', 'Unknown')}"
+                    res = data.get("result", {})
+                    if res and res.get("status") == "Found":
+                        bot_res = f"Success: {res.get('file_name')}. Content: {res.get('content')[:100]}..."
                     else:
-                        bot_res = f"Agent Error: {data.get('error', 'Malformed Response')}"
+                        bot_res = f"Status: {res.get('status', 'Not Found or Error')}"
             except Exception as ex:
-                bot_res = f"Connection Failed: {str(ex)}"
+                bot_res = f"Network Connection Error: {str(ex)}"
     else:
-        bot_res = "Instructions: Please type 'discover [file_path]' to test the link."
+        bot_res = "System: Use 'discover [file_path]' to test the sub-agent."
 
-    # Update UI with Bot response
     state.chat_history.append({"role": "bot", "content": bot_res})
     state.is_loading = False
 
@@ -99,58 +80,47 @@ async def send_message(e: me.ClickEvent):
 def app():
     state = me.state(State)
     
-    with me.box(style=me.Style(display="flex", height="100vh", font_family="Inter, Roboto, sans-serif")):
+    with me.box(style=me.Style(display="flex", height="100vh", font_family="Inter, sans-serif")):
         
-        # Sidebar: Agent Management
-        with me.box(style=me.Style(width="320px", padding=me.Padding.all(24), background="#f8f9fa", border_right=me.Border.all(me.BorderSide(width=1, color="#ddd")))):
-            me.text("Agent Pipeline", type="headline-6")
+        # Sidebar Container
+        with me.box(style=me.Style(
+            width="320px", 
+            padding=me.Padding.all(24), 
+            background="#f8f9fa",
+            # Standard border syntax for Mesop
+            border=me.Border.all(me.BorderSide(width=1, color="#ddd", style="solid"))
+        )):
+            me.text("Sub-Agent Manager", type="headline-6")
             
             with me.box(style=me.Style(margin=me.Margin(top=16))):
-                me.input(label="Agent Role", on_blur=on_name_blur, style=me.Style(width="100%"))
-                me.input(label="Port (e.g. 8081)", on_blur=on_port_blur, style=me.Style(width="100%"))
-                me.button("Register Agent", on_click=add_agent, type="flat", style=me.Style(margin=me.Margin(top=8)))
+                me.input(label="Agent Name", on_blur=on_name_input)
+                me.input(label="Port", on_blur=on_port_blur)
+                me.button("Register", on_click=add_agent, type="flat")
             
             me.divider(style=me.Style(margin=me.Margin(vertical=20)))
             
-            me.text("Active Cluster:", style=me.Style(font_weight="bold", font_size=12, color="#666"))
+            me.text("Active Cluster:", style=me.Style(font_weight="bold"))
             for agent in state.sub_agents:
-                with me.box(style=me.Style(padding=me.Padding.all(10), margin=me.Margin(top=8), background="#fff", border_radius=4, border=me.Border.all(me.BorderSide(width=1, color="#eee")))):
-                    me.text(f"ID: {agent['name']}", style=me.Style(font_weight="bold"))
-                    me.text(f"Port: {agent['port']}", type="caption")
+                with me.box(style=me.Style(padding=me.Padding.all(8), margin=me.Margin(top=5), background="#fff")):
+                    me.text(f"{agent['name']} @ {agent['port']}")
 
-        # Main Content: Chatbot Interface
-        with me.box(style=me.Style(flex_grow=1, display="flex", flex_direction="column", background="#ffffff")):
+        # Chatbot Interface
+        with me.box(style=me.Style(flex_grow=1, display="flex", flex_direction="column")):
             
-            # Header
-            with me.box(style=me.Style(padding=me.Padding.all(16), border_bottom=me.Border.all(me.BorderSide(width=1, color="#eee")))):
-                me.text("A2A Orchestrator Console", type="headline-5")
-
-            # Chat History Area
+            # Chat History
             with me.box(style=me.Style(flex_grow=1, padding=me.Padding.all(24), overflow_y="scroll")):
                 for m in state.chat_history:
                     is_user = m['role'] == "user"
                     with me.box(style=me.Style(
-                        margin=me.Margin(bottom=16),
-                        padding=me.Padding.all(16),
+                        margin=me.Margin(bottom=12),
+                        padding=me.Padding.all(12),
+                        background="#e3f2fd" if is_user else "#f1f1f1",
                         border_radius=8,
-                        background="#e3f2fd" if is_user else "#f5f5f5",
-                        max_width="85%",
                         align_self="flex-end" if is_user else "flex-start"
                     )):
                         me.text(m['content'])
 
-            # Input Footer
-            with me.box(style=me.Style(padding=me.Padding.all(24), border_top=me.Border.all(me.BorderSide(width=1, color="#eee")), display="flex", gap=12)):
-                me.input(
-                    label="Command Entry (Type 'discover test.txt')", 
-                    on_blur=on_chat_blur, 
-                    value=state.chat_input,
-                    style=me.Style(flex_grow=1)
-                )
-                me.button(
-                    "Execute", 
-                    on_click=send_message, 
-                    disabled=state.is_loading, 
-                    type="raised",
-                    style=me.Style(background="#1a73e8", color="#fff")
-                )
+            # Footer Input
+            with me.box(style=me.Style(padding=me.Padding.all(24), display="flex", gap=12)):
+                me.input(label="Chat / Command", on_blur=on_chat_blur, value=state.chat_input, style=me.Style(flex_grow=1))
+                me.button("Run", on_click=send_message, disabled=state.is_loading, type="raised")
