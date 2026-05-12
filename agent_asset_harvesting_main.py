@@ -1,3 +1,5 @@
+uv run python -c "import a2a; import os; print('\n'.join([os.path.join(dp, f) for dp, dn, filenames in os.walk(a2a.__path__[0]) for f in filenames if f == 'app.py' or f == 'apps.py']))"
+
 from a2a.server.app import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
