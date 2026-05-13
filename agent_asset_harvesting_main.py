@@ -1,8 +1,6 @@
-TypeError: Can't instantiate abstract class AssetHarvestingHandler without an implementation for abstract methods 'name', 'process_task'
-
-
 import sys
 import uvicorn
+from typing import Any, Dict
 
 # --- 1. RPC Patch (Keep at the top) ---
 try:
@@ -12,27 +10,36 @@ try:
             if hasattr(a2a_json_rpc.spec, alt):
                 a2a_json_rpc.spec.TaskSendParams = getattr(a2a_json_rpc.spec, alt)
                 break
-        else:
-            class Dummy: pass
-            a2a_json_rpc.spec.TaskSendParams = Dummy
 except ImportError:
     pass
 
-# --- 2. Correct Imports ---
+# --- 2. Imports ---
 from a2a_server.app import create_app
 from a2a_server.tasks.handlers.task_handler import TaskHandler
 from agent_asset_harvesting_executor import AssetHarvestingAgentExecutor
 
-# --- 3. Define Handler via Inheritance ---
-# This fixes the "TaskHandler() takes no arguments" error
+# --- 3. Corrected Subclass ---
 class AssetHarvestingHandler(TaskHandler):
-    def __init__(self, executor, name):
+    def __init__(self, executor: Any):
         super().__init__()
-        self.name = name
-        self.agent_executor = executor
+        self.executor = executor
+        # Implementation for the abstract 'name' attribute
+        self._name = "asset_harvesting"
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    # Implementation for the abstract method 'process_task'
+    async def process_task(self, params: Any) -> Any:
+        """
+        The framework calls this method when a task is received.
+        """
+        # Ensure your executor has an 'execute' or similar method
+        return await self.executor.execute(params)
 
 if __name__ == '__main__':
-    # Configuration Dictionary
+    # Configuration
     handler_cfg = {
         "agent_card": {
             "name": "Asset Harvesting Agent",
@@ -42,23 +49,16 @@ if __name__ == '__main__':
             "skills": [{
                 "id": "asset_harvesting",
                 "name": "Asset Harvesting",
-                "description": "Scan directories for asset data.",
-                "tags": ["harvesting"],
-                "examples": ["Harvest from /data"]
+                "description": "Scan directories for asset data."
             }]
         }
     }
 
-    # Initialize Executor
+    # Initialize
     executor = AssetHarvestingAgentExecutor()
+    request_handler = AssetHarvestingHandler(executor=executor)
 
-    # Initialize Handler using the Subclass
-    request_handler = AssetHarvestingHandler(
-        executor=executor,
-        name="asset_harvesting"
-    )
-
-    # Create and Start App
+    # App setup
     app = create_app(
         handlers=[request_handler],
         handlers_config={"asset_harvesting": handler_cfg}
