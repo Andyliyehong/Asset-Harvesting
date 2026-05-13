@@ -1,89 +1,64 @@
 import sys
+import uvicorn
 
-# ── 1. 解决 TaskSendParams 导入失败的“补丁” (必须放在最前面) ──────
+# --- 1. RPC Patch (Keep at the top) ---
 try:
     import a2a_json_rpc.spec
     if not hasattr(a2a_json_rpc.spec, 'TaskSendParams'):
-        # 尝试映射新版名称
         for alt in ['ExecuteTaskParams', 'TaskParams']:
             if hasattr(a2a_json_rpc.spec, alt):
                 a2a_json_rpc.spec.TaskSendParams = getattr(a2a_json_rpc.spec, alt)
                 break
         else:
-            # 如果都没找到，伪造一个，防止程序崩溃
             class Dummy: pass
             a2a_json_rpc.spec.TaskSendParams = Dummy
 except ImportError:
     pass
 
-# ── 2. 正确的导入路径 ──────────────────────────────────────────────────
+# --- 2. Correct Imports ---
 from a2a_server.app import create_app
-# from a2a_server.request_handlers import DefaultRequestHandler
 from a2a_server.tasks.handlers.task_handler import TaskHandler
-# from a2a_server.tasks.task_manager import TaskManager
-# from a2a_server.tasks.task_handler_registry import TaskHandlerRegistry # 核心改变
-# from a2a_server.tasks import InMemoryTaskStore
-# 根据之前的路径推测，这里可能也需要下划线
-# from a2a_server.agent_card import AgentCapabilities, AgentSkill
 from agent_asset_harvesting_executor import AssetHarvestingAgentExecutor
 
-if __name__ == '__main__':
-    # # 1. 定义 Skill
-    # skill = AgentSkill(
-    #     id='asset_harvesting',
-    #     name='Asset Harvesting Agent',
-    #     description='Specialized in scanning directories and extracting asset data from documents.',
-    #     tags=['asset harvesting', 'document processing'],
-    #     examples=['Harvest assets from directory: /path/to/data'],
-    # )
+# --- 3. Define Handler via Inheritance ---
+# This fixes the "TaskHandler() takes no arguments" error
+class AssetHarvestingHandler(TaskHandler):
+    def __init__(self, executor, name):
+        super().__init__()
+        self.name = name
+        self.agent_executor = executor
 
-    # # 2. 定义 Agent Card
-    # agent_card = AgentCard(
-    #     name='Asset Harvesting Agent',
-    #     description='Converts unstructured data into structured asset information.',
-    #     url='http://localhost:10001/',
-    #     version='1.0.0',
-    #     capabilities=AgentCapabilities(streaming=True),
-    #     skills=[skill],
-    # )
+if __name__ == '__main__':
+    # Configuration Dictionary
     handler_cfg = {
         "agent_card": {
             "name": "Asset Harvesting Agent",
-            "description": "Converts unstructured data into structured asset information.",
+            "description": "Extracts asset data from documents.",
             "version": "1.0.0",
-            "capabilities": {"streaming": True}
-        },
-        "skill": {
-            "id": "asset_harvesting",
-            "name": "Asset Harvesting Agent",
-            "description": "Specialized in scanning directories and extracting asset data from documents.",
-            "tags": ["asset harvesting", "document processing"],
-            "examples": ["Harvest assets from directory: /path/to/data"]
+            "capabilities": {"streaming": True},
+            "skills": [{
+                "id": "asset_harvesting",
+                "name": "Asset Harvesting",
+                "description": "Scan directories for asset data.",
+                "tags": ["harvesting"],
+                "examples": ["Harvest from /data"]
+            }]
         }
     }
 
-
-    # # 3. 初始化 Executor 和 Handler
-    # # 注意：这里的 DefaultRequestHandler 必须符合 a2a_server 的要求
+    # Initialize Executor
     executor = AssetHarvestingAgentExecutor()
-    request_handler = TaskHandler(
-        name="asset_harvesting", # 这里的名字最好和 skill id 一致
-        agent_executor=executor,
-        agent_card=handler_cfg["agent_card"],
-        skill=handler_cfg["skill"]
-    )
-    # request_handler = TaskHandlerRegistry(
-    #     name="asset_harvesting", # 这里的名字最好和 skill id 一致
-    #     agent_executor=executor
-    # )
 
-    # # 4. 使用工厂函数创建 app (这是最重要的改变)
-    # # create_app 接受一个 handlers 列表
+    # Initialize Handler using the Subclass
+    request_handler = AssetHarvestingHandler(
+        executor=executor,
+        name="asset_harvesting"
+    )
+
+    # Create and Start App
     app = create_app(
-        handlers=[request_handler]
+        handlers=[request_handler],
+        handlers_config={"asset_harvesting": handler_cfg}
     )
 
-    # 5. 启动服务器
-    import uvicorn
-    # 注意：不再调用 server.build()，因为 create_app 返回的就是 FastAPI 实例
     uvicorn.run(app, host='0.0.0.0', port=10001)
