@@ -1,3 +1,6 @@
+TypeError: Can't instantiate abstract class AssetHarvestingHandler without an implementation for abstract methods 'name', 'process_task'
+
+
 import sys
 import uvicorn
 
